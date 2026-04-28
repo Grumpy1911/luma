@@ -1,0 +1,8 @@
+{
+  "name": "luma-webshop",
+  "version": "1.0.0",
+  "description": "Luma — Handgemaakte 3D-Geprinte Lampen",
+  "dependencies": {
+    "@mollie/api-client": "^3.7.0"
+  }
+}

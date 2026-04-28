@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bedankt voor je bestelling — Luma</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --olive:#6B7C4E;--olive-dark:#4E5C38;
+            --cream:#FAF7F2;--cream-mid:#F5F1EA;
+            --brown:#5C3D2E;--text:#3D3330;--text-light:#7A716A;
+            --border:rgba(166,153,140,.2);
+            --font-h:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;
+        }
+        body{font-family:var(--font-b);background:var(--cream);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;-webkit-font-smoothing:antialiased}
+        .card{background:#fff;border-radius:16px;padding:3rem 2.5rem;max-width:500px;width:100%;text-align:center;box-shadow:0 8px 32px rgba(92,61,46,.08);border:1px solid var(--border)}
+        .icon{width:72px;height:72px;background:rgba(107,124,78,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2rem}
+        h1{font-family:var(--font-h);font-size:1.8rem;color:var(--brown);font-weight:400;margin-bottom:.75rem}
+        p{color:var(--text-light);line-height:1.75;font-size:.95rem;margin-bottom:1rem}
+        .steps{background:var(--cream-mid);border-radius:10px;padding:1.25rem 1.5rem;margin:1.5rem 0;text-align:left}
+        .step{display:flex;align-items:flex-start;gap:.75rem;padding:.4rem 0;font-size:.88rem;color:var(--text-light)}
+        .step-num{width:22px;height:22px;border-radius:50%;background:var(--olive);color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+        .btn{display:inline-flex;align-items:center;padding:.8rem 2rem;border-radius:50px;background:var(--olive);color:#fff;font-family:var(--font-b);font-size:.9rem;font-weight:600;text-decoration:none;transition:background .2s;margin-top:.5rem}
+        .btn:hover{background:var(--olive-dark)}
+        .logo{font-family:var(--font-h);font-size:1.2rem;color:var(--brown);margin-bottom:2rem;opacity:.6}
+    </style>
+</head>
+<body>
+    <div class="logo">Luma</div>
+    <div class="card">
+        <div class="icon">✨</div>
+        <h1>Bedankt voor je bestelling!</h1>
+        <p>Je betaling is ontvangen. We gaan meteen aan de slag met jouw unieke lamp.</p>
+        <div class="steps">
+            <div class="step"><span class="step-num">1</span><span>Je ontvangt een bevestigingsmail op het opgegeven e-mailadres</span></div>
+            <div class="step"><span class="step-num">2</span><span>We beginnen met het printen en afwerken van jouw lamp (5–7 werkdagen)</span></div>
+            <div class="step"><span class="step-num">3</span><span>Je ontvangt een track & trace code zodra het pakket onderweg is</span></div>
+        </div>
+        <p style="font-size:.82rem">Vragen? Mail ons op <a href="mailto:hello@luma-lampen.be" style="color:var(--olive)">hello@luma-lampen.be</a></p>
+        <a href="/" class="btn">Terug naar de shop</a>
+    </div>
+
+    <script>
+        // Winkelwagen leegmaken na succesvolle betaling
+        localStorage.removeItem('luma_cart');
+    </script>
+</body>
+</html>
