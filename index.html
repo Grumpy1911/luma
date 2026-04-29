@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luma — Handgemaakte 3D-Geprinte Lampen</title>
+    <meta name="description" content="Luma maakt unieke, handgemaakte lampen met 3D-printtechnologie. Bestel direct online. Gratis verzending vanaf €75.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --olive:#6B7C4E;--olive-light:#8A9B6A;--olive-dark:#4E5C38;
+            --bordeaux:#7A2E3B;--bordeaux-light:#9B4455;
+            --cream:#FAF7F2;--cream-dark:#F0EBE3;--cream-mid:#F5F1EA;
+            --warm:#E8DFD4;--warm-dark:#D4C9BB;
+            --text:#3D3330;--text-light:#7A716A;--text-muted:#A89E95;
+            --border:rgba(166,153,140,.2);
+            --brown:#5C3D2E;--white:#FFFFFF;
+            --font-h:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;
+            --ease:cubic-bezier(.16,1,.3,1);--r:14px;--r-sm:8px;
+            --shadow-sm:0 1px 4px rgba(92,61,46,.05);--shadow:0 6px 24px rgba(92,61,46,.07);--shadow-lg:0 16px 48px rgba(92,61,46,.1);
+        }
+        html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--warm-dark) var(--cream);overflow-x:hidden}
+        body{font-family:var(--font-b);background:var(--cream);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+        a{color:inherit;text-decoration:none}
+
+        /* COOKIE BANNER */
+        .cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--border);padding:1.25rem 2rem;z-index:5000;display:none;box-shadow:0 -4px 20px rgba(0,0,0,.06)}
+        .cookie-banner.active{display:block}
+        .cookie-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+        .cookie-inner p{font-size:.85rem;color:var(--text-light);max-width:680px;line-height:1.6}
+        .cookie-inner p a{color:var(--olive);text-decoration:underline}
+        .cookie-actions{display:flex;gap:.5rem;flex-shrink:0}
+
+        /* NAV */
+        .nav{position:sticky;top:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--border);transition:box-shadow .3s}
+        .nav.scrolled{box-shadow:var(--shadow-sm)}
+        .nav-inner{max-width:1100px;margin:0 auto;padding:.85rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
+        .nav-logo{font-family:var(--font-h);font-size:1.5rem;color:var(--brown);letter-spacing:1px}
+        .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+        .nav-links a{color:var(--text-light);font-size:.88rem;font-weight:500;transition:color .2s;letter-spacing:.2px}
+        .nav-links a:hover{color:var(--text)}
+        .nav-cart{position:relative;background:var(--olive);color:#fff;border:none;padding:.55rem 1.4rem;border-radius:50px;font-family:var(--font-b);font-size:.83rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+        .nav-cart:hover{background:var(--olive-dark)}
+        .cart-count{background:var(--bordeaux);color:#fff;font-size:.65rem;font-weight:700;width:17px;height:17px;border-radius:50%;display:none;align-items:center;justify-content:center;position:absolute;top:-3px;right:-3px}
+        .cart-count.visible{display:flex}
+        .hamburger{display:none;background:none;border:none;cursor:pointer;padding:12px;min-width:44px;min-height:44px;flex-direction:column;gap:5px;justify-content:center;align-items:center}
+        .hamburger span{width:22px;height:1.5px;background:var(--text);border-radius:2px;transition:all .3s}
+        .hamburger.active span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px)}
+        .hamburger.active span:nth-child(2){opacity:0}
+        .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px)}
+
+        /* PROMO BAR */
+        .promo-bar{background:var(--bordeaux);color:#fff;text-align:center;padding:.55rem 1rem;font-size:.83rem;font-weight:500;letter-spacing:.3px}
+        .promo-bar:empty{display:none}
+
+        /* HERO */
+        .hero{background:var(--cream-mid);padding:4rem 1.5rem 3rem;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-60px;right:-80px;width:350px;height:350px;border:2px solid rgba(107,124,78,.12);border-radius:50%;pointer-events:none}
+        .hero::after{content:'';position:absolute;bottom:-40px;left:-60px;width:250px;height:250px;border:2px solid rgba(122,46,59,.08);border-radius:50%;pointer-events:none}
+        .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center}
+        .hero-text h1{font-family:var(--font-h);font-size:clamp(2.25rem,5vw,3.25rem);color:var(--brown);line-height:1.18;margin-bottom:1.25rem;font-weight:400}
+        .hero-text p{font-size:1.05rem;color:var(--text-light);line-height:1.8;margin-bottom:2rem;max-width:440px}
+        .hero-perks{display:flex;gap:2rem;margin-bottom:2.25rem}
+        .hero-perk{font-size:.83rem;color:var(--text-light);display:flex;align-items:center;gap:.4rem}
+        .hero-perk::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--olive);flex-shrink:0}
+        .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap}
+        .hero-image{aspect-ratio:4/3;background:var(--cream-mid);border-radius:var(--r);overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .hero-image img{width:100%;height:100%;object-fit:cover}
+
+        /* BUTTONS */
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2rem;border-radius:50px;font-family:var(--font-b);font-size:.88rem;font-weight:600;cursor:pointer;border:none;transition:all .25s var(--ease);letter-spacing:.2px}
+        .btn-olive{background:var(--olive);color:#fff}
+        .btn-olive:hover{background:var(--olive-dark);transform:translateY(-1px);box-shadow:var(--shadow)}
+        .btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
+        .btn-outline:hover{border-color:var(--olive);color:var(--olive)}
+        .btn-bordeaux{background:var(--bordeaux);color:#fff}
+        .btn-bordeaux:hover{background:var(--bordeaux-light)}
+        .btn-sm{padding:.5rem 1.2rem;font-size:.8rem}
+        .btn-ghost{background:none;border:none;color:var(--text-light);padding:.5rem 1rem;font-size:.83rem;cursor:pointer;min-height:44px;display:inline-flex;align-items:center}
+        .btn-ghost:hover{color:var(--text)}
+
+        /* TRUST BAR */
+        .trust-bar{background:var(--olive);padding:1.1rem 1.5rem}
+        .trust-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap}
+        .trust-item{font-size:.82rem;color:rgba(255,255,255,.9);font-weight:500;letter-spacing:.2px}
+
+        /* SECTION DIVIDERS */
+        .section-divider{width:100%;overflow:hidden;line-height:0}
+        .section-divider svg{display:block;width:100%;height:48px}
+
+        /* SECTIONS */
+        .section{padding:4rem 1.5rem}
+        .section-cream{background:var(--cream)}
+        .section-white{background:var(--white)}
+        .section-tinted{background:rgba(107,124,78,.045)}
+        .section-header{text-align:center;margin-bottom:2.5rem}
+        .section-header .section-tagline{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--olive);margin-bottom:.5rem}
+        .section-header h2{font-family:var(--font-h);font-size:clamp(1.75rem,4vw,2.25rem);color:var(--brown);font-weight:400;margin-bottom:.5rem}
+        .section-header h2::after{content:'';display:block;width:40px;height:2px;background:var(--olive);margin:.6rem auto 0;border-radius:2px}
+        .section-header p{color:var(--text-light);font-size:.95rem;max-width:460px;margin:.25rem auto 0}
+        .section-inner{max-width:1100px;margin:0 auto}
+
+        /* PRODUCT GRID */
+        .products-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+        .product-card{background:var(--cream-mid);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);transition:all .35s var(--ease);cursor:pointer;position:relative}
+        .product-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--olive);border-radius:var(--r) var(--r) 0 0;opacity:0;transition:opacity .3s var(--ease);z-index:2}
+        .product-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(107,124,78,.12);border-color:transparent}
+        .product-card:hover::before{opacity:1}
+        .product-badge{position:absolute;top:.85rem;left:.85rem;z-index:2;padding:.2rem .7rem;border-radius:50px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+        .badge-sale{background:var(--bordeaux);color:#fff}
+        .badge-new{background:var(--olive);color:#fff}
+        .badge-popular{background:var(--brown);color:#fff}
+        .product-images{position:relative;aspect-ratio:1;background:var(--cream-mid);overflow:hidden}
+        .product-images img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease)}
+        .product-card:hover .product-images img{transform:scale(1.04)}
+        .product-info{padding:1.25rem 1.25rem 1.35rem}
+        .product-cat{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--bordeaux);margin-bottom:.3rem}
+        .product-info h3{font-family:var(--font-h);font-size:1.05rem;color:var(--brown);font-weight:400;margin-bottom:.3rem}
+        .product-info .desc{font-size:.83rem;color:var(--text-light);line-height:1.55;margin-bottom:.85rem;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .product-bottom{display:flex;justify-content:space-between;align-items:center}
+        .price{font-family:var(--font-h);font-size:1.15rem;color:var(--brown)}
+        .price-old{font-size:.82rem;color:var(--text-muted);text-decoration:line-through;margin-right:.3rem}
+        .price-sale{color:var(--bordeaux)}
+        .btn-add{background:var(--olive);color:#fff;border:none;padding:.45rem 1rem;border-radius:50px;font-family:var(--font-b);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.2px}
+        .btn-add:hover{background:var(--olive-dark)}
+
+        /* PRODUCT MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(60,50,44,.45);backdrop-filter:blur(4px);z-index:2000;align-items:center;justify-content:center;padding:1rem}
+        .modal-overlay.active{display:flex}
+        .modal{background:var(--white);border-radius:var(--r);max-width:860px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+        .modal-close{position:absolute;top:1rem;right:1rem;background:var(--cream);border:none;width:44px;height:44px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;color:var(--text-light);transition:background .2s}
+        .modal-close:hover{background:var(--warm)}
+        .modal-body{display:grid;grid-template-columns:1fr 1fr}
+        .modal-gallery{background:var(--cream-mid);padding:2rem;display:flex;flex-direction:column;gap:.75rem}
+        .modal-main-img{aspect-ratio:1;border-radius:var(--r-sm);overflow:hidden;background:var(--cream);display:flex;align-items:center;justify-content:center}
+        .modal-main-img img{width:100%;height:100%;object-fit:cover}
+        .modal-thumbs{display:flex;gap:.4rem}
+        .modal-thumb{width:56px;height:56px;border-radius:var(--r-sm);overflow:hidden;border:2px solid transparent;cursor:pointer;background:var(--cream);transition:border-color .2s}
+        .modal-thumb.active{border-color:var(--olive)}
+        .modal-thumb img{width:100%;height:100%;object-fit:cover}
+        .modal-details{padding:2.5rem 2rem}
+        .modal-details .product-cat{margin-bottom:.4rem}
+        .modal-details h2{font-family:var(--font-h);font-size:1.6rem;color:var(--brown);font-weight:400;margin-bottom:.5rem}
+        .modal-details .desc{color:var(--text-light);line-height:1.75;margin-bottom:1.5rem;font-size:.92rem}
+        .modal-details .price{font-size:1.4rem;margin-bottom:1.5rem;display:block}
+        .modal-specs{margin-bottom:1.5rem}
+        .modal-specs h4{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:.5rem}
+        .modal-specs ul{list-style:none}
+        .modal-specs li{font-size:.85rem;color:var(--text-light);padding:.3rem 0 .3rem 1.2rem;position:relative}
+        .modal-specs li::before{content:'';position:absolute;left:0;top:.65rem;width:5px;height:5px;border-radius:50%;background:var(--olive)}
+
+        /* CART SIDEBAR */
+        .cart-overlay{display:none;position:fixed;inset:0;background:rgba(60,50,44,.35);backdrop-filter:blur(2px);z-index:3000}
+        .cart-overlay.active{display:block}
+        .cart-sidebar{position:fixed;top:0;right:-420px;width:400px;max-width:90vw;height:100vh;background:var(--white);z-index:3001;transition:right .35s var(--ease);display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+        .cart-sidebar.active{right:0}
+        .cart-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+        .cart-header h3{font-family:var(--font-h);font-size:1.15rem;color:var(--brown);font-weight:400}
+        .cart-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-light);padding:4px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+        .cart-items{flex:1;overflow-y:auto;padding:1rem 1.5rem}
+        .cart-empty{text-align:center;padding:3rem 1rem;color:var(--text-muted);font-size:.9rem}
+        .cart-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+        .cart-item-img{width:64px;height:64px;border-radius:var(--r-sm);overflow:hidden;background:var(--cream-mid);flex-shrink:0}
+        .cart-item-img img{width:100%;height:100%;object-fit:cover}
+        .cart-item-info{flex:1}
+        .cart-item-info h4{font-family:var(--font-h);font-size:.9rem;color:var(--brown);font-weight:400;margin-bottom:.15rem}
+        .cart-item-info .price{font-size:.88rem}
+        .cart-item-qty{display:flex;align-items:center;gap:.5rem;margin-top:.35rem}
+        .qty-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--text);transition:all .2s}
+        .qty-btn:hover{border-color:var(--olive);background:var(--cream)}
+        .cart-item-qty span{font-size:.85rem;font-weight:600;min-width:18px;text-align:center}
+        .cart-item-remove{background:none;border:none;color:var(--text-muted);font-size:.73rem;cursor:pointer;margin-top:.3rem;transition:color .2s}
+        .cart-item-remove:hover{color:var(--bordeaux)}
+        .cart-footer{padding:1.5rem;border-top:1px solid var(--border)}
+        .cart-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+        .cart-total span:first-child{font-size:.88rem;color:var(--text-light)}
+        .cart-total span:last-child{font-family:var(--font-h);font-size:1.25rem;color:var(--brown)}
+        .cart-note{font-size:.78rem;color:var(--text-muted);margin-bottom:1rem;display:block}
+        .checkout-form{display:none}
+        .checkout-form.active{display:block}
+        .checkout-form h3{font-family:var(--font-h);font-size:1rem;color:var(--brown);font-weight:400;margin-bottom:.75rem}
+        .form-group{margin-bottom:.65rem}
+        .form-group label{display:block;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:.2rem}
+        .form-group input,.form-group textarea,.form-group select{width:100%;background:var(--cream);border:1px solid var(--border);border-radius:var(--r-sm);padding:.6rem .8rem;font-family:var(--font-b);font-size:.88rem;color:var(--text);outline:none;transition:border-color .2s}
+        .form-group input:focus,.form-group textarea:focus{border-color:var(--olive)}
+        .form-group textarea{resize:vertical;min-height:50px}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+        .form-group .checkbox-label{display:flex;align-items:flex-start;gap:.5rem;font-size:.78rem;color:var(--text-light);line-height:1.5;cursor:pointer}
+        .form-group .checkbox-label input[type=checkbox]{margin-top:.2rem;accent-color:var(--olive)}
+        .form-group .checkbox-label a{color:var(--olive);text-decoration:underline}
+        .checkout-success{text-align:center;padding:2rem 1rem}
+        .checkout-success h3{font-family:var(--font-h);color:var(--brown);font-weight:400;margin-bottom:.5rem}
+        .checkout-success p{color:var(--text-light);font-size:.88rem}
+
+        /* ABOUT */
+        .about-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+        .about-card{text-align:center;padding:2rem 1.5rem;background:var(--cream-mid);border-radius:var(--r);border-left:3px solid var(--olive);transition:transform .3s var(--ease)}
+        .about-card:hover{transform:translateY(-3px)}
+        .about-card:nth-child(1){border-left-color:var(--olive)}
+        .about-card:nth-child(2){border-left-color:var(--bordeaux)}
+        .about-card:nth-child(3){border-left-color:var(--brown)}
+        .about-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;color:#fff;font-size:.85rem;font-weight:700;font-family:var(--font-h);background:var(--olive)}
+        .about-card:nth-child(2) .about-icon{background:var(--bordeaux)}
+        .about-card:nth-child(3) .about-icon{background:var(--brown)}
+        .about-card h3{font-family:var(--font-h);font-size:1.05rem;color:var(--brown);font-weight:400;margin-bottom:.35rem}
+        .about-card p{font-size:.85rem;color:var(--text-light);line-height:1.65}
+
+        /* REVIEWS */
+        .reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+        .review-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;border-left:3px solid var(--bordeaux);transition:transform .3s var(--ease)}
+        .review-card:hover{transform:translateY(-3px)}
+        .review-stars{color:var(--bordeaux);font-size:.75rem;letter-spacing:2px;margin-bottom:.85rem}
+        .review-card blockquote{font-size:.9rem;color:var(--text);line-height:1.7;font-style:italic;margin-bottom:1rem}
+        .review-author{font-size:.78rem;font-weight:600;color:var(--olive)}
+
+        /* FOOTER */
+        .footer{background:var(--olive-dark);color:rgba(255,255,255,.65);padding:3.5rem 1.5rem 1.5rem}
+        .footer-inner{max-width:1100px;margin:0 auto}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem}
+        .footer-brand .logo{font-family:var(--font-h);font-size:1.3rem;color:#fff;margin-bottom:.5rem;display:block}
+        .footer-brand p{font-size:.82rem;line-height:1.65}
+        .footer-col h4{color:rgba(255,255,255,.85);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:.85rem}
+        .footer-col a{display:block;color:rgba(255,255,255,.55);font-size:.82rem;padding:.2rem 0;transition:color .2s}
+        .footer-col a:hover{color:#fff}
+        .footer-legal{border-top:1px solid rgba(255,255,255,.1);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap}
+        .footer-legal-left{font-size:.75rem;line-height:1.8}
+        .footer-legal-links{display:flex;gap:1.25rem;flex-wrap:wrap}
+        .footer-legal-links a{font-size:.75rem;color:rgba(255,255,255,.4);transition:color .2s}
+        .footer-legal-links a:hover{color:rgba(255,255,255,.8)}
+
+        /* LEGAL MODAL */
+        .legal-overlay{display:none;position:fixed;inset:0;background:rgba(60,50,44,.45);backdrop-filter:blur(4px);z-index:4000;align-items:center;justify-content:center;padding:1rem}
+        .legal-overlay.active{display:flex}
+        .legal-modal{background:var(--white);border-radius:var(--r);max-width:700px;width:100%;max-height:85vh;overflow-y:auto;padding:2.5rem;position:relative}
+        .legal-modal h2{font-family:var(--font-h);font-size:1.4rem;color:var(--brown);font-weight:400;margin-bottom:1.5rem}
+        .legal-modal h3{font-family:var(--font-h);font-size:1.05rem;color:var(--brown);font-weight:400;margin:1.5rem 0 .5rem}
+        .legal-modal p,.legal-modal li{font-size:.88rem;color:var(--text-light);line-height:1.75}
+        .legal-modal ul{margin-left:1.25rem;margin-bottom:1rem}
+        .legal-modal .close-legal{position:sticky;top:0;float:right;background:var(--cream);border:none;width:44px;height:44px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--text-light);display:flex;align-items:center;justify-content:center}
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){
+            .products-grid{grid-template-columns:repeat(2,1fr)}
+            .footer-grid{grid-template-columns:repeat(2,1fr)}
+        }
+        @media(max-width:768px){
+            .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.98);flex-direction:column;justify-content:center;align-items:center;gap:2rem;z-index:1001}
+            .nav-links.active{display:flex}
+            .hamburger{display:flex}
+            .hero{padding:2.5rem 1rem 2rem}
+            .hero-inner{grid-template-columns:1fr;text-align:center}
+            .hero-perks{justify-content:center;flex-wrap:wrap}
+            .hero-text p{margin-left:auto;margin-right:auto}
+            .hero-actions{justify-content:center}
+            .hero-image{max-height:320px}
+            .section{padding:2.5rem 1rem}
+            .section-divider svg{height:28px}
+            .products-grid{grid-template-columns:1fr 1fr}
+            .btn-add{padding:.65rem 1.2rem;font-size:.83rem}
+            .modal-body{grid-template-columns:1fr}
+            .modal-details{padding:1.5rem 1.25rem}
+            .modal-gallery{padding:1.25rem}
+            .about-strip,.reviews-grid{grid-template-columns:1fr}
+            .about-card{border-left:none;border-top:3px solid var(--olive)}
+            .about-card:nth-child(2){border-top-color:var(--bordeaux);border-left:none}
+            .about-card:nth-child(3){border-top-color:var(--brown);border-left:none}
+            .review-card{border-left:none;border-top:3px solid var(--bordeaux)}
+            .trust-inner{flex-direction:column;align-items:center;gap:.4rem}
+            .trust-item{text-align:center}
+            .qty-btn{width:40px;height:40px;font-size:.9rem}
+            .footer-grid{grid-template-columns:1fr}
+            .footer-legal{flex-direction:column;gap:.75rem}
+            .cookie-inner{flex-direction:column;text-align:center}
+            .cookie-actions{flex-wrap:wrap;justify-content:center}
+            .form-row{grid-template-columns:1fr}
+            .form-group input,.form-group textarea,.form-group select{padding:.75rem .8rem}
+        }
+        @media(max-width:480px){
+            .section{padding:2rem 1rem}
+            .products-grid{grid-template-columns:1fr}
+            .hero-perks{flex-direction:column;align-items:center}
+            .hero-actions{flex-direction:column;align-items:center}
+            .hero-actions .btn{width:100%;justify-content:center}
+            .modal{border-radius:0;max-height:100vh}
+            .modal-overlay{padding:0}
+            .legal-modal{padding:1.5rem 1.25rem}
+            .legal-overlay{padding:.5rem}
+            .cart-footer{padding:1rem}
+            .cart-items{padding:.75rem 1rem}
+        }
+    </style>
+</head>
+<body>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+    <div class="cookie-inner">
+        <p>Wij gebruiken cookies om je ervaring te verbeteren. Door verder te surfen ga je akkoord met ons <a href="#" onclick="openLegal('cookies');return false">cookiebeleid</a>.</p>
+        <div class="cookie-actions">
+            <button class="btn btn-olive btn-sm" id="cookieAccept">Accepteren</button>
+            <button class="btn-ghost" id="cookieDecline">Weigeren</button>
+        </div>
+    </div>
+</div>
+
+<!-- PROMO BAR -->
+<div class="promo-bar" id="promoBar"></div>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-logo">Luma</a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#producten">Lampen</a></li>
+            <li><a href="#verhaal">Ons verhaal</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:.75rem">
+            <button class="nav-cart" id="cartBtn">
+                Winkelwagen
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div class="hero-inner">
+        <div class="hero-text">
+            <h1>Unieke lampen,<br>laag voor laag<br>met liefde gemaakt</h1>
+            <p>Handgemaakte 3D-geprinte lampen die <em style="font-family:var(--font-h);font-style:italic;color:var(--olive)">warmte en sfeer</em> brengen in elk interieur. Duurzaam, uniek en gemaakt in Belgi&#235;.</p>
+            <div class="hero-perks">
+                <span class="hero-perk">Gratis verzending vanaf &#8364;75</span>
+                <span class="hero-perk">Duurzaam PLA</span>
+                <span class="hero-perk">Handgemaakt</span>
+            </div>
+            <div class="hero-actions">
+                <a href="#producten" class="btn btn-olive">Bekijk de collectie</a>
+                <a href="#verhaal" class="btn btn-outline">Ons verhaal</a>
+            </div>
+        </div>
+        <div class="hero-image" id="heroImage"></div>
+    </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+    <div class="trust-inner">
+        <span class="trust-item">4.9/5 sterren op basis van 120+ reviews</span>
+        <span class="trust-item">Gratis verzending vanaf &#8364;75</span>
+        <span class="trust-item">14 dagen bedenktijd</span>
+        <span class="trust-item">Gemaakt in Belgi&#235;</span>
+    </div>
+</div>
+
+<!-- DIVIDER -->
+<div class="section-divider"><svg viewBox="0 0 1440 48" preserveAspectRatio="none"><path d="M0,48 C360,0 1080,0 1440,48 L1440,48 L0,48 Z" fill="var(--cream)"/></svg></div>
+
+<!-- PRODUCTS -->
+<section class="section section-cream" id="producten">
+    <div class="section-inner">
+        <div class="section-header">
+            <span class="section-tagline">Collectie</span>
+            <h2>Onze lampen</h2>
+            <p>Elk stuk is uniek en met de hand afgewerkt in ons atelier.</p>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="section-divider"><svg viewBox="0 0 1440 48" preserveAspectRatio="none"><path d="M0,0 C360,48 1080,48 1440,0 L1440,48 L0,48 Z" fill="var(--white)"/></svg></div>
+
+<!-- ABOUT -->
+<section class="section section-white" id="verhaal">
+    <div class="section-inner">
+        <div class="section-header">
+            <span class="section-tagline">Ons verhaal</span>
+            <h2>Waarom Luma</h2>
+        </div>
+        <div class="about-strip">
+            <div class="about-card">
+                <div class="about-icon">01</div>
+                <h3>Handgemaakt</h3>
+                <p>Elke lamp wordt laag voor laag opgebouwd en met de hand afgewerkt in ons atelier in Gent. Geen twee lampen zijn identiek.</p>
+            </div>
+            <div class="about-card">
+                <div class="about-icon">02</div>
+                <h3>Duurzaam materiaal</h3>
+                <p>Wij gebruiken PLA, een biologisch afbreekbaar materiaal gemaakt van hernieuwbare bronnen. Goed voor jou en de planeet.</p>
+            </div>
+            <div class="about-card">
+                <div class="about-icon">03</div>
+                <h3>Uniek lichteffect</h3>
+                <p>De 3D-geprinte structuur cre&#235;ert prachtige lichtpatronen die elke ruimte warmte en karakter geven.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="section-divider"><svg viewBox="0 0 1440 48" preserveAspectRatio="none"><path d="M0,48 C360,0 1080,0 1440,48 L1440,48 L0,48 Z" fill="rgba(107,124,78,.045)"/></svg></div>
+
+<!-- REVIEWS -->
+<section class="section section-tinted" id="reviews">
+    <div class="section-inner">
+        <div class="section-header">
+            <span class="section-tagline">Ervaringen</span>
+            <h2>Wat klanten zeggen</h2>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+                <blockquote>"De Luna Pendel is prachtig. Het lichtpatroon op de muur is betoverend. Je merkt echt dat het met liefde gemaakt is."</blockquote>
+                <div class="review-author">Lisa D. &#8212; Interieurarchitect, Gent</div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+                <blockquote>"Als cadeau besteld en het was een schot in de roos. Indrukwekkende kwaliteit. De afwerking is werkelijk prachtig."</blockquote>
+                <div class="review-author">Thomas V. &#8212; Antwerpen</div>
+            </div>
+            <div class="review-card">
+                <div class="review-stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+                <blockquote>"Drie lampen besteld voor ons restaurant. De sfeer die ze cre&#235;ren is precies wat we zochten. Absolute aanrader."</blockquote>
+                <div class="review-author">An J. &#8212; Eigenaresse, Bistro Lumen</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DIVIDER -->
+<div class="section-divider"><svg viewBox="0 0 1440 48" preserveAspectRatio="none"><path d="M0,0 C360,48 1080,48 1440,0 L1440,48 L0,48 Z" fill="var(--olive-dark)"/></svg></div>
+
+<!-- FOOTER -->
+<footer class="footer" id="contact">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <span class="logo" id="footerLogo" style="cursor:default">Luma</span>
+                <p>Handgemaakte 3D-geprinte lampen uit Gent, Belgi&#235;. Elk stuk uniek, duurzaam en ontworpen met passie voor licht en design.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <a href="#producten">Alle lampen</a>
+                <a href="#producten">Hanglampen</a>
+                <a href="#producten">Tafellampen</a>
+                <a href="#producten">Vloerlampen</a>
+            </div>
+            <div class="footer-col">
+                <h4>Klantenservice</h4>
+                <a href="#" onclick="openLegal('verzending');return false">Verzending &amp; levering</a>
+                <a href="#" onclick="openLegal('retour');return false">Retourneren</a>
+                <a href="#" onclick="openLegal('faq');return false">Veelgestelde vragen</a>
+                <a href="mailto:hello@luma-lampen.be">hello@luma-lampen.be</a>
+            </div>
+            <div class="footer-col">
+                <h4>Luma</h4>
+                <a href="#verhaal">Ons verhaal</a>
+                <a href="#reviews">Reviews</a>
+                <a href="#">Instagram</a>
+                <a href="#">Pinterest</a>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <div class="footer-legal-left">
+                &#169; 2026 Luma. Alle rechten voorbehouden.<br>
+                Luma &#8212; [Jouw naam], [Adres], [Postcode Gent], Belgi&#235;<br>
+                BTW: BE 0XXX.XXX.XXX &#8212; hello@luma-lampen.be &#8212; +32 456 78 90 12
+            </div>
+            <div class="footer-legal-links">
+                <a href="#" onclick="openLegal('voorwaarden');return false">Algemene voorwaarden</a>
+                <a href="#" onclick="openLegal('privacy');return false">Privacybeleid</a>
+                <a href="#" onclick="openLegal('cookies');return false">Cookiebeleid</a>
+                <a href="#" onclick="openLegal('herroeping');return false">Herroepingsrecht</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="productModal">
+        <button class="modal-close" id="modalClose">&#10005;</button>
+        <div class="modal-body">
+            <div class="modal-gallery">
+                <div class="modal-main-img" id="modalMainImg"></div>
+                <div class="modal-thumbs" id="modalThumbs"></div>
+            </div>
+            <div class="modal-details" id="modalDetails"></div>
+        </div>
+    </div>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+        <h3>Winkelwagen</h3>
+        <button class="cart-close" id="cartClose">&#10005;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer" id="cartFooter">
+        <div class="cart-total">
+            <span>Totaal (incl. BTW)</span>
+            <span id="cartTotal">&#8364;0</span>
+        </div>
+        <span class="cart-note">Gratis verzending vanaf &#8364;75</span>
+        <button class="btn btn-olive" style="width:100%;justify-content:center" id="checkoutBtn">Afrekenen</button>
+        <div class="checkout-form" id="checkoutForm">
+            <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0">
+            <h3>Bestelgegevens</h3>
+            <form id="orderForm">
+                <div class="form-row">
+                    <div class="form-group"><label>Voornaam</label><input type="text" name="fname" required></div>
+                    <div class="form-group"><label>Achternaam</label><input type="text" name="lname" required></div>
+                </div>
+                <div class="form-group"><label>E-mail</label><input type="email" name="email" required></div>
+                <div class="form-group"><label>Telefoon</label><input type="tel" name="phone"></div>
+                <div class="form-group"><label>Adres + huisnummer</label><input type="text" name="address" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Postcode</label><input type="text" name="zip" required></div>
+                    <div class="form-group"><label>Stad</label><input type="text" name="city" required></div>
+                </div>
+                <div class="form-group"><label>Opmerking (optioneel)</label><textarea name="note"></textarea></div>
+                <div class="form-group">
+                    <label class="checkbox-label"><input type="checkbox" required> Ik ga akkoord met de <a href="#" onclick="openLegal('voorwaarden');return false">algemene voorwaarden</a> en het <a href="#" onclick="openLegal('privacy');return false">privacybeleid</a>.</label>
+                </div>
+                <button type="submit" class="btn btn-olive" id="payBtn" style="width:100%;justify-content:center;margin-top:.5rem">Betalen via Mollie</button>
+            </form>
+        </div>
+        <div class="checkout-success" id="checkoutSuccess" style="display:none">
+            <h3>Doorsturen naar betaling...</h3>
+            <p>Even geduld, je wordt doorgestuurd naar de betaalpagina.</p>
+        </div>
+    </div>
+</div>
+
+<!-- LEGAL MODAL -->
+<div class="legal-overlay" id="legalOverlay">
+    <div class="legal-modal" id="legalModal">
+        <button class="close-legal" onclick="closeLegal()">&#10005;</button>
+        <div id="legalContent"></div>
+    </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// =====================
+// LEGAL CONTENT
+// =====================
+const legalPages = {
+    voorwaarden: `
+        <h2>Algemene voorwaarden</h2>
+        <p><strong>Laatst bijgewerkt: april 2026</strong></p>
+        <h3>Artikel 1 — Identiteit van de ondernemer</h3>
+        <p>Luma, gevestigd te Gent, België.<br>E-mail: hello@luma-lampen.be<br>Telefoon: +32 456 78 90 12<br>Ondernemingsnummer: BE 0XXX.XXX.XXX</p>
+        <h3>Artikel 2 — Toepasselijkheid</h3>
+        <p>Deze algemene voorwaarden zijn van toepassing op elk aanbod van Luma en op elke tot stand gekomen overeenkomst op afstand tussen Luma en de consument.</p>
+        <h3>Artikel 3 — Het aanbod</h3>
+        <p>Alle prijzen zijn in euro en inclusief 21% BTW. Verzendkosten worden apart vermeld. Luma behoudt zich het recht voor om prijzen te wijzigen.</p>
+        <h3>Artikel 4 — De overeenkomst</h3>
+        <p>De overeenkomst komt tot stand op het moment van aanvaarding door de consument van het aanbod en het voldoen aan de daarbij gestelde voorwaarden.</p>
+        <h3>Artikel 5 — Prijs</h3>
+        <p>Alle vermelde prijzen zijn inclusief BTW (21%). Gratis verzending is van toepassing bij bestellingen vanaf €75.</p>
+        <h3>Artikel 6 — Betaling</h3>
+        <p>Betaling geschiedt via Bancontact, Visa, Mastercard of andere door Mollie ondersteunde betaalmethodes.</p>
+        <h3>Artikel 7 — Levering</h3>
+        <p>Levering vindt plaats binnen 5-7 werkdagen na ontvangst van betaling. Maatwerkproducten hebben een levertijd van 2-3 weken.</p>
+        <h3>Artikel 8 — Herroepingsrecht</h3>
+        <p>De consument heeft het recht de overeenkomst binnen 14 kalenderdagen zonder opgave van reden te ontbinden. Maatwerkproducten zijn uitgesloten.</p>
+        <h3>Artikel 9 — Garantie</h3>
+        <p>Luma biedt binnen 2 jaar na aankoop een kosteloze vervanging of terugbetaling aan bij fabricagefouten.</p>
+        <h3>Artikel 10 — Klachten</h3>
+        <p>Klachten kunnen worden gericht aan hello@luma-lampen.be. Bij geschillen: ec.europa.eu/odr.</p>
+        <h3>Artikel 11 — Toepasselijk recht</h3>
+        <p>Op alle overeenkomsten is het Belgisch recht van toepassing.</p>
+    `,
+    privacy: `
+        <h2>Privacybeleid</h2>
+        <p><strong>Laatst bijgewerkt: april 2026</strong></p>
+        <p>Luma hecht groot belang aan de bescherming van je persoonsgegevens conform de AVG/GDPR.</p>
+        <h3>1. Verwerkingsverantwoordelijke</h3>
+        <p>Luma, Gent, België. E-mail: hello@luma-lampen.be</p>
+        <h3>2. Welke gegevens verzamelen wij</h3>
+        <ul><li><strong>Bestelgegevens:</strong> naam, e-mail, telefoonnummer, adres</li><li><strong>Navigatiegegevens:</strong> IP-adres, browsertype via cookies</li></ul>
+        <h3>3. Doeleinden</h3>
+        <ul><li>Verwerking en levering van bestellingen</li><li>Communicatie over je bestelling</li><li>Verbetering van onze website</li></ul>
+        <h3>4. Bewaartermijn</h3>
+        <p>Bestelgegevens worden bewaard gedurende 7 jaar. Cookiegegevens maximaal 12 maanden.</p>
+        <h3>5. Jouw rechten</h3>
+        <p>Inzage, rectificatie, wissing, beperking, overdraagbaarheid en bezwaar via hello@luma-lampen.be.</p>
+    `,
+    cookies: `
+        <h2>Cookiebeleid</h2>
+        <p><strong>Laatst bijgewerkt: april 2026</strong></p>
+        <h3>Welke cookies gebruiken wij?</h3>
+        <ul>
+            <li><strong>Noodzakelijke cookies:</strong> winkelwagen, sessie</li>
+            <li><strong>Functionele cookies:</strong> voorkeuren</li>
+            <li><strong>Analytische cookies:</strong> geanonimiseerde websitestatistieken</li>
+        </ul>
+        <p>Voor vragen: hello@luma-lampen.be</p>
+    `,
+    herroeping: `
+        <h2>Herroepingsrecht</h2>
+        <p><strong>Conform Boek VI van het Wetboek van economisch recht</strong></p>
+        <h3>Herroepingstermijn</h3>
+        <p>14 kalenderdagen na ontvangst van het product.</p>
+        <h3>Hoe herroepen?</h3>
+        <p>Stuur een e-mail naar hello@luma-lampen.be met je naam, bestelnummer, ontvangstdatum en verklaring van herroeping.</p>
+        <h3>Uitzonderingen</h3>
+        <ul><li>Maatwerkproducten</li><li>Producten die duidelijk persoonlijk van aard zijn</li></ul>
+    `,
+    verzending: `
+        <h2>Verzending &amp; levering</h2>
+        <h3>Levertijd</h3>
+        <ul><li><strong>Standaard:</strong> 5-7 werkdagen</li><li><strong>Maatwerk:</strong> 2-3 weken</li></ul>
+        <h3>Verzendkosten</h3>
+        <ul><li>België: €4,95 (gratis vanaf €75)</li><li>Nederland: €6,95 (gratis vanaf €100)</li></ul>
+        <h3>Bezorging</h3>
+        <p>Via bpost of DPD. Je ontvangt een track &amp; trace code per e-mail.</p>
+    `,
+    retour: `
+        <h2>Retourneren</h2>
+        <h3>Procedure</h3>
+        <ul><li>Mail naar hello@luma-lampen.be met je bestelnummer</li><li>Retourinstructies binnen 2 werkdagen</li><li>Terugbetaling binnen 14 dagen na ontvangst</li></ul>
+        <h3>Voorwaarden</h3>
+        <ul><li>Originele, onbeschadigde staat</li><li>Retourkosten voor rekening van de koper</li><li>Maatwerk kan niet worden geretourneerd</li></ul>
+    `,
+    faq: `
+        <h2>Veelgestelde vragen</h2>
+        <h3>Welk materiaal?</h3>
+        <p>PLA (Polylactic Acid), biologisch afbreekbaar materiaal van hernieuwbare bronnen.</p>
+        <h3>Welke lamp past erin?</h3>
+        <p>Standaard E27-fittingen. LED-lampen warm wit (2700K) aanbevolen. Max 40W.</p>
+        <h3>Maatwerk mogelijk?</h3>
+        <p>Ja. Mail hello@luma-lampen.be. Prijzen vanaf €149.</p>
+        <h3>Levertijd?</h3>
+        <p>5-7 werkdagen standaard, 2-3 weken maatwerk.</p>
+        <h3>Levering naar?</h3>
+        <p>België en Nederland. Andere EU-landen op aanvraag.</p>
+    `
+};
+
+window.openLegal = function(page) {
+    document.getElementById('legalContent').innerHTML = legalPages[page] || '';
+    document.getElementById('legalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+window.closeLegal = function() {
+    document.getElementById('legalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+};
+document.getElementById('legalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeLegal();
+});
+
+// =====================
+// COOKIE BANNER
+// =====================
+if (!localStorage.getItem('luma_cookies_accepted')) {
+    document.getElementById('cookieBanner').classList.add('active');
+}
+document.getElementById('cookieAccept').addEventListener('click', function() {
+    localStorage.setItem('luma_cookies_accepted', '1');
+    document.getElementById('cookieBanner').classList.remove('active');
+});
+document.getElementById('cookieDecline').addEventListener('click', function() {
+    localStorage.setItem('luma_cookies_accepted', '0');
+    document.getElementById('cookieBanner').classList.remove('active');
+});
+
+// =====================
+// DEFAULT PRODUCTS
+// =====================
+const defaultProducts = [
+    {id:'luna',name:'Luna Pendel',category:'Hanglamp',price:89,description:'Organische vormen geïnspireerd door de maan. Creëert een zachte, warme gloed die elke ruimte transformeert.',specs:['E27 fitting','PLA materiaal','Ø 25cm','Warm wit aanbevolen'],images:[],badge:'popular'},
+    {id:'terra',name:'Terra Tafellamp',category:'Tafellamp',price:129,description:'Aardse texturen en warme tinten. Perfect voor op je bureau of nachtkastje. Inclusief LED-lamp.',specs:['E27 fitting','PLA materiaal','H 35cm','Inclusief LED-lamp'],images:[],badge:'new'},
+    {id:'helix',name:'Helix Vloerlamp',category:'Vloerlamp',price:249,oldPrice:299,description:'Een spiraalvormig meesterwerk dat licht en schaduw laat dansen over je muren.',specs:['E27 fitting','PLA materiaal','H 160cm','Dimbaar'],images:[],badge:'sale'},
+    {id:'cocoon',name:'Cocoon Hanglamp',category:'Hanglamp',price:159,description:'Een cocon van licht. Gelaagde structuur die een betoverend patroon werpt op muren en plafond.',specs:['E27 fitting','PLA materiaal','Ø 30cm','Lichtgewicht'],images:[],badge:''},
+    {id:'facet',name:'Facet Bureaulamp',category:'Bureaulamp',price:99,description:'Geometrische facetten vangen het licht en creëren een diamant-effect. Compact en stijlvol.',specs:['E27 fitting','PLA materiaal','H 28cm','Compact design'],images:[],badge:'new'},
+    {id:'coral',name:'Coral Wandlamp',category:'Wandlamp',price:119,description:'Geïnspireerd door koraalriffen. Organische vormen die leven brengen aan elke muur.',specs:['E27 fitting','PLA materiaal','Ø 20cm','Inclusief bevestiging'],images:[],badge:''},
+];
+
+// =====================
+// SUPABASE CONFIG
+// =====================
+const SUPABASE_URL = 'https://pgexambwfqchlkhlbywo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZXhhbWJ3ZnFjaGxraGxieXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjg4MTMsImV4cCI6MjA5MTk0NDgxM30.DjLTRsAUTf4r8XD3CgXt1cJRtzj4y8TnP2Y8lqNVp3U';
+
+let db = null;
+if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+
+let _products = null;
+let _promo = null;
+let _heroImage = null;
+
+async function loadData() {
+    if (db) {
+        try {
+            const { data } = await db.from('luma_data').select('*');
+            if (data && data.length > 0) {
+                data.forEach(function(row) {
+                    if (row.key === 'products') _products = row.value;
+                    if (row.key === 'promo') _promo = row.value;
+                    if (row.key === 'hero_image') _heroImage = row.value;
+                });
+            }
+        } catch(e) { console.warn('Supabase niet bereikbaar, localStorage fallback.'); }
+    }
+    if (!_products) {
+        var stored = localStorage.getItem('luma_products');
+        if (stored) { try { _products = JSON.parse(stored); } catch(e) {} }
+    }
+    if (!_products) _products = defaultProducts;
+    if (_promo === null) _promo = localStorage.getItem('luma_promo') || '';
+    if (_heroImage === null) _heroImage = localStorage.getItem('luma_hero_image') || '';
+}
+
+function getProducts() { return _products || defaultProducts; }
+function getPromo() { return _promo || ''; }
+function getHeroImage() { return _heroImage || ''; }
+
+// =====================
+// CART
+// =====================
+let cart = JSON.parse(localStorage.getItem('luma_cart') || '[]');
+
+function saveCart() { localStorage.setItem('luma_cart', JSON.stringify(cart)); updateCartUI(); }
+
+function addToCart(id) {
+    const products = getProducts();
+    if (!products.find(p => p.id === id)) return;
+    const existing = cart.find(c => c.id === id);
+    if (existing) existing.qty++; else cart.push({ id: id, qty: 1 });
+    saveCart();
+    openCart();
+}
+
+function removeFromCart(id) { cart = cart.filter(c => c.id !== id); saveCart(); }
+
+function updateQty(id, delta) {
+    const item = cart.find(c => c.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+    saveCart();
+}
+
+function getCartTotal() {
+    const products = getProducts();
+    return cart.reduce((sum, item) => {
+        const p = products.find(pr => pr.id === item.id);
+        return sum + (p ? p.price * item.qty : 0);
+    }, 0);
+}
+
+function updateCartUI() {
+    const count = cart.reduce((s, i) => s + i.qty, 0);
+    const el = document.getElementById('cartCount');
+    el.textContent = count;
+    el.classList.toggle('visible', count > 0);
+    renderCartItems();
+}
+
+function renderCartItems() {
+    const products = getProducts();
+    const container = document.getElementById('cartItems');
+    const footer = document.getElementById('cartFooter');
+
+    if (cart.length === 0) {
+        container.innerHTML = '<div class="cart-empty">Je winkelwagen is leeg.<br><br><a href="#producten" style="color:var(--olive);font-weight:600" onclick="closeCart()">Bekijk onze lampen</a></div>';
+        footer.style.display = 'none';
+        return;
+    }
+    footer.style.display = 'block';
+    footer.style.flex = '';
+    footer.style.overflowY = '';
+    container.style.display = '';
+    document.getElementById('checkoutForm').classList.remove('active');
+    document.getElementById('checkoutSuccess').style.display = 'none';
+    document.getElementById('checkoutBtn').style.display = '';
+
+    container.innerHTML = cart.map(item => {
+        const p = products.find(pr => pr.id === item.id);
+        if (!p) return '';
+        const imgHTML = p.images && p.images.length > 0
+            ? '<img src="'+p.images[0]+'" alt="'+p.name+'">'
+            : '';
+        return '<div class="cart-item"><div class="cart-item-img">'+imgHTML+'</div><div class="cart-item-info"><h4>'+p.name+'</h4><span class="price">€'+p.price+'</span><div class="cart-item-qty"><button class="qty-btn" onclick="updateQty(\''+p.id+'\',-1)">−</button><span>'+item.qty+'</span><button class="qty-btn" onclick="updateQty(\''+p.id+'\',1)">+</button></div><button class="cart-item-remove" onclick="removeFromCart(\''+p.id+'\')">Verwijderen</button></div></div>';
+    }).join('');
+
+    document.getElementById('cartTotal').textContent = '€' + getCartTotal();
+}
+
+window.updateQty = updateQty;
+window.removeFromCart = removeFromCart;
+window.closeCart = closeCart;
+window.addToCart = addToCart;
+
+// =====================
+// RENDER PRODUCTS
+// =====================
+function renderProducts() {
+    const products = getProducts();
+    document.getElementById('productsGrid').innerHTML = products.map(function(p) {
+        var badgeHTML = p.badge === 'sale' ? '<div class="product-badge badge-sale">Sale</div>'
+            : p.badge === 'new' ? '<div class="product-badge badge-new">Nieuw</div>'
+            : p.badge === 'popular' ? '<div class="product-badge badge-popular">Populair</div>' : '';
+        var imgHTML = p.images && p.images.length > 0
+            ? '<img src="'+p.images[0]+'" alt="'+p.name+'" loading="lazy">'
+            : '';
+        var priceHTML = p.oldPrice
+            ? '<span class="price-old">€'+p.oldPrice+'</span><span class="price price-sale">€'+p.price+'</span>'
+            : '<span class="price">€'+p.price+'</span>';
+        return '<div class="product-card" onclick="openProduct(\''+p.id+'\')">'+badgeHTML+'<div class="product-images">'+imgHTML+'</div><div class="product-info"><div class="product-cat">'+p.category+'</div><h3>'+p.name+'</h3><p class="desc">'+p.description+'</p><div class="product-bottom"><div>'+priceHTML+'</div><button class="btn-add" onclick="event.stopPropagation();addToCart(\''+p.id+'\')">Bestel</button></div></div></div>';
+    }).join('');
+}
+
+// =====================
+// PRODUCT MODAL
+// =====================
+window.openProduct = function(id) {
+    var products = getProducts();
+    var p = products.find(function(pr) { return pr.id === id; });
+    if (!p) return;
+    var mainImg = document.getElementById('modalMainImg');
+    var thumbs = document.getElementById('modalThumbs');
+    var details = document.getElementById('modalDetails');
+    if (p.images && p.images.length > 0) {
+        mainImg.innerHTML = '<img src="'+p.images[0]+'" alt="'+p.name+'">';
+        thumbs.innerHTML = p.images.map(function(img, i) {
+            return '<div class="modal-thumb'+(i===0?' active':'')+'" onclick="switchModalImg(\''+img+'\',this)"><img src="'+img+'" alt=""></div>';
+        }).join('');
+        thumbs.style.display = p.images.length > 1 ? 'flex' : 'none';
+    } else {
+        mainImg.innerHTML = '';
+        thumbs.innerHTML = '';
+        thumbs.style.display = 'none';
+    }
+    var priceHTML = p.oldPrice
+        ? '<span class="price-old">€'+p.oldPrice+'</span> <span class="price price-sale">€'+p.price+'</span>'
+        : '<span class="price">€'+p.price+'</span>';
+    details.innerHTML = '<div class="product-cat">'+p.category+'</div><h2>'+p.name+'</h2><p class="desc">'+p.description+'</p><div style="margin-bottom:1.5rem">'+priceHTML+'</div><div class="modal-specs"><h4>Specificaties</h4><ul>'+p.specs.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div><p style="font-size:.78rem;color:var(--text-muted);margin-bottom:1.25rem">Alle prijzen zijn inclusief 21% BTW.</p><button class="btn btn-olive" onclick="addToCart(\''+p.id+'\')">In winkelwagen</button>';
+    document.getElementById('modalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+
+window.switchModalImg = function(src, thumb) {
+    document.getElementById('modalMainImg').innerHTML = '<img src="'+src+'" alt="">';
+    document.querySelectorAll('.modal-thumb').forEach(function(t) { t.classList.remove('active'); });
+    thumb.classList.add('active');
+};
+
+document.getElementById('modalClose').addEventListener('click', function() {
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+});
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) { this.classList.remove('active'); document.body.style.overflow = ''; }
+});
+
+// =====================
+// CART SIDEBAR
+// =====================
+function openCart() {
+    document.getElementById('cartSidebar').classList.add('active');
+    document.getElementById('cartOverlay').classList.add('active');
+    document.getElementById('modalOverlay').classList.remove('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+    document.getElementById('cartSidebar').classList.remove('active');
+    document.getElementById('cartOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+document.getElementById('cartBtn').addEventListener('click', openCart);
+document.getElementById('cartClose').addEventListener('click', closeCart);
+document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+document.getElementById('checkoutBtn').addEventListener('click', function() {
+    const form = document.getElementById('checkoutForm');
+    const items = document.getElementById('cartItems');
+    const footer = document.getElementById('cartFooter');
+    form.classList.toggle('active');
+    if (form.classList.contains('active')) {
+        items.style.display = 'none';
+        footer.style.flex = '1';
+        footer.style.overflowY = 'auto';
+    } else {
+        items.style.display = '';
+        footer.style.flex = '';
+        footer.style.overflowY = '';
+    }
+});
+
+// =====================
+// MOLLIE CHECKOUT
+// =====================
+document.getElementById('orderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const payBtn = document.getElementById('payBtn');
+    payBtn.textContent = 'Even geduld...';
+    payBtn.disabled = true;
+
+    const products = getProducts();
+    const cartDetails = cart.map(function(item) {
+        const p = products.find(function(pr) { return pr.id === item.id; });
+        return { id: item.id, name: p ? p.name : item.id, price: p ? p.price : 0, qty: item.qty };
+    });
+
+    const orderData = {
+        fname: this.fname.value,
+        lname: this.lname.value,
+        email: this.email.value,
+        phone: this.phone.value || '',
+        address: this.address.value,
+        zip: this.zip.value,
+        city: this.city.value,
+        note: this.note ? this.note.value : ''
+    };
+
+    try {
+        const response = await fetch('/api/create-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: getCartTotal(),
+                orderData: orderData,
+                cart: cartDetails
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.checkoutUrl) {
+            document.getElementById('checkoutForm').classList.remove('active');
+            document.getElementById('checkoutBtn').style.display = 'none';
+            document.getElementById('checkoutSuccess').style.display = 'block';
+            window.location.href = data.checkoutUrl;
+        } else {
+            throw new Error(data.error || 'Geen checkout URL ontvangen');
+        }
+
+    } catch (err) {
+        console.error('Betaalfout:', err);
+        payBtn.textContent = 'Betalen via Mollie';
+        payBtn.disabled = false;
+        alert('Er ging iets mis bij het aanmaken van de betaling. Probeer opnieuw of contacteer ons via hello@luma-lampen.be');
+    }
+});
+
+// =====================
+// PROMO & HERO
+// =====================
+function renderPromo() { document.getElementById('promoBar').innerHTML = getPromo(); }
+
+function renderHeroImage() {
+    var img = getHeroImage();
+    var el = document.getElementById('heroImage');
+    if (img) el.innerHTML = '<img src="'+img+'" alt="Luma lampen">';
+}
+
+// =====================
+// NAV
+// =====================
+window.addEventListener('scroll', function() {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+document.getElementById('hamburger').addEventListener('click', function() {
+    this.classList.toggle('active');
+    document.getElementById('navLinks').classList.toggle('active');
+});
+
+document.querySelectorAll('.nav-links a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        document.getElementById('hamburger').classList.remove('active');
+        document.getElementById('navLinks').classList.remove('active');
+    });
+});
+
+// =====================
+// INIT
+// =====================
+(async function init() {
+    await loadData();
+    renderProducts();
+    renderPromo();
+    renderHeroImage();
+    updateCartUI();
+})();
+
+window.addEventListener('storage', async function() {
+    await loadData();
+    renderProducts();
+    renderPromo();
+    renderHeroImage();
+});
+
+// Hidden admin access — triple-click footer logo
+(function(){
+    var c=0,t=null;
+    document.getElementById('footerLogo').addEventListener('click',function(){
+        c++;
+        clearTimeout(t);
+        t=setTimeout(function(){c=0},800);
+        if(c>=3){c=0;window.location.href='admin.html'}
+    });
+})();
+
+})();
+</script>
+</body>
+</html>
