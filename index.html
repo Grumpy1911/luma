@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luma — Handgemaakte 3D-Geprinte Lampen</title>
-    <meta name="description" content="Luma maakt unieke, handgemaakte lampen met 3D-printtechnologie. Bestel direct online. Gratis verzending vanaf €75.">
+    <title>Luma — Lampen die van je huis een thuis maken</title>
+    <meta name="description" content="Luma — lampen die van je huis een thuis maken. Unieke designs vol warmte en sfeer. Bestel online, gratis verzending vanaf €75.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
@@ -59,8 +59,8 @@
 
         /* HERO */
         .hero{background:var(--cream-mid);padding:4rem 1.5rem 3rem;position:relative;overflow:hidden}
-        .hero::before{content:'';position:absolute;top:-60px;right:-80px;width:350px;height:350px;border:2px solid rgba(107,124,78,.12);border-radius:50%;pointer-events:none}
-        .hero::after{content:'';position:absolute;bottom:-40px;left:-60px;width:250px;height:250px;border:2px solid rgba(122,46,59,.08);border-radius:50%;pointer-events:none}
+        .hero::before{display:none}
+        .hero::after{display:none}
         .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center}
         .hero-text h1{font-family:var(--font-h);font-size:clamp(2.25rem,5vw,3.25rem);color:var(--brown);line-height:1.18;margin-bottom:1.25rem;font-weight:400}
         .hero-text p{font-size:1.05rem;color:var(--text-light);line-height:1.8;margin-bottom:2rem;max-width:440px}
@@ -334,12 +334,12 @@
 <section class="hero" id="hero">
     <div class="hero-inner">
         <div class="hero-text">
-            <h1>Unieke lampen,<br>laag voor laag<br>met liefde gemaakt</h1>
-            <p>Handgemaakte 3D-geprinte lampen die <em style="font-family:var(--font-h);font-style:italic;color:var(--olive)">warmte en sfeer</em> brengen in elk interieur. Duurzaam, uniek en gemaakt in Belgi&#235;.</p>
+            <h1>Licht dat van<br>je huis een<br>thuis maakt</h1>
+            <p>Lampen die <em style="font-family:var(--font-h);font-style:italic;color:var(--olive)">warmte en geborgenheid</em> brengen in elk interieur. Ontworpen met oog voor detail, gemaakt in Belgi&#235;.</p>
             <div class="hero-perks">
                 <span class="hero-perk">Gratis verzending vanaf &#8364;75</span>
-                <span class="hero-perk">Duurzaam PLA</span>
-                <span class="hero-perk">Handgemaakt</span>
+                <span class="hero-perk">Duurzaam materiaal</span>
+                <span class="hero-perk">Gemaakt in België</span>
             </div>
             <div class="hero-actions">
                 <a href="#producten" class="btn btn-olive">Bekijk de collectie</a>
@@ -355,7 +355,7 @@
     <div class="trust-inner">
         <span class="trust-item">4.9/5 sterren op basis van 120+ reviews</span>
         <span class="trust-item">Gratis verzending vanaf &#8364;75</span>
-        <span class="trust-item">14 dagen bedenktijd</span>
+        <span class="trust-item">Veilig betalen</span>
         <span class="trust-item">Gemaakt in Belgi&#235;</span>
     </div>
 </div>
@@ -369,7 +369,7 @@
         <div class="section-header">
             <span class="section-tagline">Collectie</span>
             <h2>Onze lampen</h2>
-            <p>Elk stuk is uniek en met de hand afgewerkt in ons atelier.</p>
+            <p>Elk stuk is uniek en met zorg afgewerkt in ons atelier.</p>
         </div>
         <div class="products-grid" id="productsGrid"></div>
     </div>
@@ -388,18 +388,18 @@
         <div class="about-strip">
             <div class="about-card">
                 <div class="about-icon">01</div>
-                <h3>Handgemaakt</h3>
-                <p>Elke lamp wordt laag voor laag opgebouwd en met de hand afgewerkt in ons atelier in Gent. Geen twee lampen zijn identiek.</p>
+                <h3>Sfeer voor thuis</h3>
+                <p>Elk huis verdient een warm welkom. Onze lampen cre&#235;ren dat gevoel van thuiskomen — gezellig, vertrouwd en helemaal van jou.</p>
             </div>
             <div class="about-card">
                 <div class="about-icon">02</div>
-                <h3>Duurzaam materiaal</h3>
-                <p>Wij gebruiken PLA, een biologisch afbreekbaar materiaal gemaakt van hernieuwbare bronnen. Goed voor jou en de planeet.</p>
+                <h3>Duurzaam &amp; bewust</h3>
+                <p>Gemaakt van milieuvriendelijk materiaal uit hernieuwbare bronnen. Mooi voor in huis, goed voor de planeet.</p>
             </div>
             <div class="about-card">
                 <div class="about-icon">03</div>
-                <h3>Uniek lichteffect</h3>
-                <p>De 3D-geprinte structuur cre&#235;ert prachtige lichtpatronen die elke ruimte warmte en karakter geven.</p>
+                <h3>Uniek lichtspel</h3>
+                <p>De bijzondere vormen vangen het licht en toveren warme patronen op je muren. Elke lamp vertelt zijn eigen verhaal.</p>
             </div>
         </div>
     </div>
@@ -418,7 +418,7 @@
         <div class="reviews-grid">
             <div class="review-card">
                 <div class="review-stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
-                <blockquote>"De Luna Pendel is prachtig. Het lichtpatroon op de muur is betoverend. Je merkt echt dat het met liefde gemaakt is."</blockquote>
+                <blockquote>"De Luna Pendel is prachtig. Het lichtpatroon op de muur is betoverend. Het geeft meteen zo'n warm thuisgevoel."</blockquote>
                 <div class="review-author">Lisa D. &#8212; Interieurarchitect, Gent</div>
             </div>
             <div class="review-card">
@@ -444,21 +444,21 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <span class="logo" id="footerLogo" style="cursor:default">Luma</span>
-                <p>Handgemaakte 3D-geprinte lampen uit Gent, Belgi&#235;. Elk stuk uniek, duurzaam en ontworpen met passie voor licht en design.</p>
+                <p>Lampen die van je huis een thuis maken. Ontworpen in Gent met oog voor sfeer, warmte en duurzaamheid.</p>
             </div>
             <div class="footer-col">
                 <h4>Shop</h4>
                 <a href="#producten">Alle lampen</a>
                 <a href="#producten">Hanglampen</a>
                 <a href="#producten">Tafellampen</a>
-                <a href="#producten">Vloerlampen</a>
+                <a href="#producten">Muurlampen</a>
             </div>
             <div class="footer-col">
                 <h4>Klantenservice</h4>
                 <a href="#" onclick="openLegal('verzending');return false">Verzending &amp; levering</a>
-                <a href="#" onclick="openLegal('retour');return false">Retourneren</a>
+                <a href="#" onclick="openLegal('faq');return false">FAQ</a>
                 <a href="#" onclick="openLegal('faq');return false">Veelgestelde vragen</a>
-                <a href="mailto:hello@luma-lampen.be">hello@luma-lampen.be</a>
+                <a href="mailto:info@luma-lights.be">info@luma-lights.be</a>
             </div>
             <div class="footer-col">
                 <h4>Luma</h4>
@@ -471,14 +471,13 @@
         <div class="footer-legal">
             <div class="footer-legal-left">
                 &#169; 2026 Luma. Alle rechten voorbehouden.<br>
-                Luma &#8212; [Jouw naam], [Adres], [Postcode Gent], Belgi&#235;<br>
-                BTW: BE 0XXX.XXX.XXX &#8212; hello@luma-lampen.be &#8212; +32 456 78 90 12
+                Luma &#8212; Thomas &amp; Olivier, Weynesbaan 23, 2820 Rijmenam, Belgi&#235;<br>
+                BTW: BE0644418411 &#8212; info@luma-lights.be &#8212; 0472 634 672 &#8212; 0476 731 729
             </div>
             <div class="footer-legal-links">
                 <a href="#" onclick="openLegal('voorwaarden');return false">Algemene voorwaarden</a>
                 <a href="#" onclick="openLegal('privacy');return false">Privacybeleid</a>
                 <a href="#" onclick="openLegal('cookies');return false">Cookiebeleid</a>
-                <a href="#" onclick="openLegal('herroeping');return false">Herroepingsrecht</a>
             </div>
         </div>
     </div>
@@ -511,7 +510,7 @@
             <span>Totaal (incl. BTW)</span>
             <span id="cartTotal">&#8364;0</span>
         </div>
-        <span class="cart-note">Gratis verzending vanaf &#8364;75</span>
+        <span class="cart-note">Verzending &#8364;7,50 &#8212; gratis vanaf &#8364;75</span>
         <button class="btn btn-olive" style="width:100%;justify-content:center" id="checkoutBtn">Afrekenen</button>
         <div class="checkout-form" id="checkoutForm">
             <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0">
@@ -561,93 +560,155 @@ const legalPages = {
     voorwaarden: `
         <h2>Algemene voorwaarden</h2>
         <p><strong>Laatst bijgewerkt: april 2026</strong></p>
+
         <h3>Artikel 1 — Identiteit van de ondernemer</h3>
-        <p>Luma, gevestigd te Gent, België.<br>E-mail: hello@luma-lampen.be<br>Telefoon: +32 456 78 90 12<br>Ondernemingsnummer: BE 0XXX.XXX.XXX</p>
+        <p>Luma — Thomas &amp; Olivier, Weynesbaan 23, 2820 Rijmenam, België.<br>
+        E-mail: info@luma-lights.be<br>
+        Telefoon: 0472 634 672 / 0476 731 729<br>
+        Ondernemingsnummer: BE0644418411</p>
+
         <h3>Artikel 2 — Toepasselijkheid</h3>
         <p>Deze algemene voorwaarden zijn van toepassing op elk aanbod van Luma en op elke tot stand gekomen overeenkomst op afstand tussen Luma en de consument.</p>
+
         <h3>Artikel 3 — Het aanbod</h3>
-        <p>Alle prijzen zijn in euro en inclusief 21% BTW. Verzendkosten worden apart vermeld. Luma behoudt zich het recht voor om prijzen te wijzigen.</p>
+        <p>Alle prijzen zijn in euro en inclusief 21% BTW. Verzendkosten worden apart vermeld. Luma behoudt zich het recht voor om prijzen te wijzigen. Afbeeldingen zijn zo waarheidsgetrouw mogelijk, maar kunnen licht afwijken van het werkelijke product.</p>
+
         <h3>Artikel 4 — De overeenkomst</h3>
-        <p>De overeenkomst komt tot stand op het moment van aanvaarding door de consument van het aanbod en het voldoen aan de daarbij gestelde voorwaarden.</p>
+        <p>De overeenkomst komt tot stand op het moment van aanvaarding door de consument van het aanbod en het voldoen aan de daarbij gestelde voorwaarden. Na ontvangst van de bestelling stuurt Luma een bevestiging per e-mail.</p>
+
         <h3>Artikel 5 — Prijs</h3>
-        <p>Alle vermelde prijzen zijn inclusief BTW (21%). Gratis verzending is van toepassing bij bestellingen vanaf €75.</p>
+        <p>Alle vermelde prijzen zijn inclusief BTW (21%). Verzendkosten worden duidelijk vermeld voor het afronden van de bestelling. Verzendkosten bedragen €7,50 per bestelling. Gratis verzending vanaf €75.</p>
+
         <h3>Artikel 6 — Betaling</h3>
-        <p>Betaling geschiedt via Bancontact, Visa, Mastercard of andere door Mollie ondersteunde betaalmethodes.</p>
+        <p>Betaling geschiedt via overschrijving, Bancontact, Visa of Mastercard. De consument ontvangt een betalingsverzoek na bevestiging van de bestelling.</p>
+
         <h3>Artikel 7 — Levering</h3>
-        <p>Levering vindt plaats binnen 5-7 werkdagen na ontvangst van betaling. Maatwerkproducten hebben een levertijd van 2-3 weken.</p>
-        <h3>Artikel 8 — Herroepingsrecht</h3>
-        <p>De consument heeft het recht de overeenkomst binnen 14 kalenderdagen zonder opgave van reden te ontbinden. Maatwerkproducten zijn uitgesloten.</p>
+        <p>Levering vindt plaats binnen 5-7 werkdagen na ontvangst van betaling, tenzij anders vermeld. Maatwerkproducten hebben een levertijd van 2-3 weken. Luma is niet aansprakelijk voor vertragingen veroorzaakt door de vervoerder.</p>
+
+        <h3>Artikel 8 — Retourbeleid</h3>
+        <p>Alle verkopen zijn definitief. Retourneren is niet mogelijk. Neem bij vragen of problemen contact op met info@luma-lights.be.</p>
+
         <h3>Artikel 9 — Garantie</h3>
-        <p>Luma biedt binnen 2 jaar na aankoop een kosteloze vervanging of terugbetaling aan bij fabricagefouten.</p>
+        <p>Luma staat in voor de kwaliteit van haar producten. Bij fabricagefouten biedt Luma binnen 2 jaar na aankoop een kosteloze vervanging of terugbetaling aan, conform de Belgische wetgeving inzake consumentenbescherming.</p>
+
         <h3>Artikel 10 — Klachten</h3>
-        <p>Klachten kunnen worden gericht aan hello@luma-lampen.be. Bij geschillen: ec.europa.eu/odr.</p>
+        <p>Klachten kunnen worden gericht aan info@luma-lights.be. Luma streeft ernaar klachten binnen 14 werkdagen te behandelen. Bij geschillen kan de consument zich wenden tot het Europees platform voor onlinegeschillenbeslechting: ec.europa.eu/odr.</p>
+
         <h3>Artikel 11 — Toepasselijk recht</h3>
         <p>Op alle overeenkomsten is het Belgisch recht van toepassing.</p>
     `,
     privacy: `
         <h2>Privacybeleid</h2>
         <p><strong>Laatst bijgewerkt: april 2026</strong></p>
-        <p>Luma hecht groot belang aan de bescherming van je persoonsgegevens conform de AVG/GDPR.</p>
+        <p>Luma hecht groot belang aan de bescherming van je persoonsgegevens. Dit privacybeleid legt uit welke gegevens wij verzamelen, waarom, en hoe wij ze beschermen, in overeenstemming met de Algemene Verordening Gegevensbescherming (AVG/GDPR).</p>
+
         <h3>1. Verwerkingsverantwoordelijke</h3>
-        <p>Luma, Gent, België. E-mail: hello@luma-lampen.be</p>
+        <p>Luma — Thomas &amp; Olivier, Weynesbaan 23, 2820 Rijmenam, België.<br>
+        E-mail: info@luma-lights.be<br>
+        Ondernemingsnummer: BE0644418411</p>
+
         <h3>2. Welke gegevens verzamelen wij</h3>
-        <ul><li><strong>Bestelgegevens:</strong> naam, e-mail, telefoonnummer, adres</li><li><strong>Navigatiegegevens:</strong> IP-adres, browsertype via cookies</li></ul>
-        <h3>3. Doeleinden</h3>
-        <ul><li>Verwerking en levering van bestellingen</li><li>Communicatie over je bestelling</li><li>Verbetering van onze website</li></ul>
-        <h3>4. Bewaartermijn</h3>
-        <p>Bestelgegevens worden bewaard gedurende 7 jaar. Cookiegegevens maximaal 12 maanden.</p>
-        <h3>5. Jouw rechten</h3>
-        <p>Inzage, rectificatie, wissing, beperking, overdraagbaarheid en bezwaar via hello@luma-lampen.be.</p>
+        <ul>
+            <li><strong>Bestelgegevens:</strong> naam, e-mail, telefoonnummer, adres — noodzakelijk voor de verwerking en levering van je bestelling.</li>
+            <li><strong>Navigatiegegevens:</strong> IP-adres, browsertype, bezochte pagina's — via cookies voor het verbeteren van de website-ervaring.</li>
+        </ul>
+
+        <h3>3. Doeleinden van verwerking</h3>
+        <ul>
+            <li>Verwerking en levering van bestellingen</li>
+            <li>Communicatie over je bestelling</li>
+            <li>Verbetering van onze website en diensten</li>
+            <li>Naleving van wettelijke verplichtingen (boekhouding, fiscaliteit)</li>
+        </ul>
+
+        <h3>4. Rechtsgrond</h3>
+        <p>Wij verwerken je gegevens op basis van: uitvoering van een overeenkomst (bestelling), wettelijke verplichting (fiscaal), of jouw toestemming (cookies, nieuwsbrief).</p>
+
+        <h3>5. Bewaartermijn</h3>
+        <p>Bestelgegevens worden bewaard gedurende 7 jaar (wettelijke boekhoudverplichting). Cookiegegevens worden maximaal 12 maanden bewaard.</p>
+
+        <h3>6. Delen met derden</h3>
+        <p>Wij delen je gegevens enkel met verwerkers die noodzakelijk zijn voor onze dienstverlening: bezorgdiensten en betalingsverwerkers. Wij verkopen nooit je gegevens aan derden.</p>
+
+        <h3>7. Jouw rechten</h3>
+        <p>Onder de AVG/GDPR heb je recht op:</p>
+        <ul>
+            <li>Inzage in je persoonsgegevens</li>
+            <li>Rectificatie van onjuiste gegevens</li>
+            <li>Wissing van je gegevens ("recht om vergeten te worden")</li>
+            <li>Beperking van verwerking</li>
+            <li>Overdraagbaarheid van je gegevens</li>
+            <li>Bezwaar tegen verwerking</li>
+        </ul>
+        <p>Je kunt deze rechten uitoefenen via info@luma-lights.be. Je hebt ook het recht een klacht in te dienen bij de Gegevensbeschermingsautoriteit (gegevensbeschermingsautoriteit.be).</p>
+
+        <h3>8. Beveiliging</h3>
+        <p>Wij nemen passende technische en organisatorische maatregelen om je gegevens te beschermen tegen ongeoorloofde toegang, verlies of misbruik.</p>
     `,
     cookies: `
         <h2>Cookiebeleid</h2>
         <p><strong>Laatst bijgewerkt: april 2026</strong></p>
+
+        <h3>Wat zijn cookies?</h3>
+        <p>Cookies zijn kleine tekstbestanden die op je apparaat worden opgeslagen wanneer je onze website bezoekt. Ze helpen ons de website goed te laten functioneren en je ervaring te verbeteren.</p>
+
         <h3>Welke cookies gebruiken wij?</h3>
         <ul>
-            <li><strong>Noodzakelijke cookies:</strong> winkelwagen, sessie</li>
-            <li><strong>Functionele cookies:</strong> voorkeuren</li>
-            <li><strong>Analytische cookies:</strong> geanonimiseerde websitestatistieken</li>
+            <li><strong>Noodzakelijke cookies:</strong> Essentieel voor het functioneren van de website (winkelwagen, sessie). Deze kunnen niet worden uitgeschakeld.</li>
+            <li><strong>Functionele cookies:</strong> Onthouden je voorkeuren (taalinstelling, cookie-keuze).</li>
+            <li><strong>Analytische cookies:</strong> Helpen ons begrijpen hoe bezoekers de website gebruiken, zodat we deze kunnen verbeteren. Gegevens worden geanonimiseerd.</li>
         </ul>
-        <p>Voor vragen: hello@luma-lampen.be</p>
-    `,
-    herroeping: `
-        <h2>Herroepingsrecht</h2>
-        <p><strong>Conform Boek VI van het Wetboek van economisch recht</strong></p>
-        <h3>Herroepingstermijn</h3>
-        <p>14 kalenderdagen na ontvangst van het product.</p>
-        <h3>Hoe herroepen?</h3>
-        <p>Stuur een e-mail naar hello@luma-lampen.be met je naam, bestelnummer, ontvangstdatum en verklaring van herroeping.</p>
-        <h3>Uitzonderingen</h3>
-        <ul><li>Maatwerkproducten</li><li>Producten die duidelijk persoonlijk van aard zijn</li></ul>
+
+        <h3>Toestemming</h3>
+        <p>Bij je eerste bezoek vragen wij je toestemming voor het plaatsen van niet-noodzakelijke cookies. Je kunt je keuze op elk moment wijzigen via je browserinstellingen.</p>
+
+        <h3>Cookies uitschakelen</h3>
+        <p>Je kunt cookies uitschakelen via de instellingen van je browser. Houd er rekening mee dat sommige functies van de website dan mogelijk niet correct werken.</p>
+
+        <h3>Meer informatie</h3>
+        <p>Voor vragen over ons cookiebeleid kun je contact opnemen via info@luma-lights.be.</p>
     `,
     verzending: `
         <h2>Verzending &amp; levering</h2>
+
         <h3>Levertijd</h3>
-        <ul><li><strong>Standaard:</strong> 5-7 werkdagen</li><li><strong>Maatwerk:</strong> 2-3 weken</li></ul>
+        <ul>
+            <li><strong>Standaard producten:</strong> 5-7 werkdagen na ontvangst van betaling</li>
+            <li><strong>Maatwerkproducten:</strong> 2-3 weken, afhankelijk van de complexiteit</li>
+        </ul>
+
         <h3>Verzendkosten</h3>
-        <ul><li>België: €4,95 (gratis vanaf €75)</li><li>Nederland: €6,95 (gratis vanaf €100)</li></ul>
+        <p>Verzendkosten bedragen \u20AC7,50 per bestelling. Gratis verzending vanaf \u20AC75.</p>
+
         <h3>Bezorging</h3>
-        <p>Via bpost of DPD. Je ontvangt een track &amp; trace code per e-mail.</p>
-    `,
-    retour: `
-        <h2>Retourneren</h2>
-        <h3>Procedure</h3>
-        <ul><li>Mail naar hello@luma-lampen.be met je bestelnummer</li><li>Retourinstructies binnen 2 werkdagen</li><li>Terugbetaling binnen 14 dagen na ontvangst</li></ul>
-        <h3>Voorwaarden</h3>
-        <ul><li>Originele, onbeschadigde staat</li><li>Retourkosten voor rekening van de koper</li><li>Maatwerk kan niet worden geretourneerd</li></ul>
+        <p>Wij verzenden via bpost, DPD of PostNL. Track & trace is altijd inbegrepen — je ontvangt een code per e-mail zodra je pakket onderweg is. Bij afwezigheid wordt het pakket aangeboden bij een afhaalpunt.</p>
+
+        <h3>Beschadiging bij levering</h3>
+        <p>Controleer je pakket bij ontvangst. Meld eventuele schade binnen 48 uur na ontvangst aan info@luma-lights.be met foto's van de beschadiging. Wij zorgen voor een kosteloze vervanging.</p>
     `,
     faq: `
         <h2>Veelgestelde vragen</h2>
-        <h3>Welk materiaal?</h3>
-        <p>PLA (Polylactic Acid), biologisch afbreekbaar materiaal van hernieuwbare bronnen.</p>
+
+        <h3>Welk materiaal gebruiken jullie?</h3>
+        <p>Onze lampen zijn gemaakt van een biologisch afbreekbaar materiaal op basis van hernieuwbare bronnen. Het is duurzaam, veilig en perfect voor verlichtingstoepassingen.</p>
+
         <h3>Welke lamp past erin?</h3>
-        <p>Standaard E27-fittingen. LED-lampen warm wit (2700K) aanbevolen. Max 40W.</p>
-        <h3>Maatwerk mogelijk?</h3>
-        <p>Ja. Mail hello@luma-lampen.be. Prijzen vanaf €149.</p>
-        <h3>Levertijd?</h3>
-        <p>5-7 werkdagen standaard, 2-3 weken maatwerk.</p>
-        <h3>Levering naar?</h3>
-        <p>België en Nederland. Andere EU-landen op aanvraag.</p>
+        <p>Al onze lampen zijn geschikt voor standaard E27-fittingen. Gebruik uitsluitend LED-lampen (warm wit, 2700K aanbevolen). Andere lampen worden niet ondersteund.</p>
+
+        <h3>Kan ik een lamp op maat laten maken?</h3>
+        <p>Absoluut. Neem contact met ons op via info@luma-lights.be en beschrijf je idee. We bespreken samen de mogelijkheden. Maatwerkprijzen beginnen vanaf \u20AC149.</p>
+
+        <h3>Hoe lang duurt de levering?</h3>
+        <p>Standaard producten worden binnen 5-7 werkdagen geleverd. Maatwerkontwerpen duren 2-3 weken.</p>
+
+        <h3>Hoe onderhoud ik mijn lamp?</h3>
+        <p>Gebruik een zachte, droge doek om stof te verwijderen. Vermijd water en agressieve schoonmaakmiddelen. Gebruik altijd LED-lampen voor de beste resultaten.</p>
+
+        <h3>Kan ik mijn bestelling retourneren?</h3>
+        <p>Alle verkopen zijn definitief. Retourneren is helaas niet mogelijk. Neem bij vragen of problemen gerust contact op via info@luma-lights.be.</p>
+
+        <h3>Naar welke landen leveren jullie?</h3>
+        <p>Wij leveren in heel Belgi\u00eb en Nederland. Voor andere EU-landen, neem contact met ons op voor een offerte.</p>
     `
 };
 
@@ -656,10 +717,12 @@ window.openLegal = function(page) {
     document.getElementById('legalOverlay').classList.add('active');
     document.body.style.overflow = 'hidden';
 };
+
 window.closeLegal = function() {
     document.getElementById('legalOverlay').classList.remove('active');
     document.body.style.overflow = '';
 };
+
 document.getElementById('legalOverlay').addEventListener('click', function(e) {
     if (e.target === this) closeLegal();
 });
@@ -683,12 +746,12 @@ document.getElementById('cookieDecline').addEventListener('click', function() {
 // DEFAULT PRODUCTS
 // =====================
 const defaultProducts = [
-    {id:'luna',name:'Luna Pendel',category:'Hanglamp',price:89,description:'Organische vormen geïnspireerd door de maan. Creëert een zachte, warme gloed die elke ruimte transformeert.',specs:['E27 fitting','PLA materiaal','Ø 25cm','Warm wit aanbevolen'],images:[],badge:'popular'},
-    {id:'terra',name:'Terra Tafellamp',category:'Tafellamp',price:129,description:'Aardse texturen en warme tinten. Perfect voor op je bureau of nachtkastje. Inclusief LED-lamp.',specs:['E27 fitting','PLA materiaal','H 35cm','Inclusief LED-lamp'],images:[],badge:'new'},
-    {id:'helix',name:'Helix Vloerlamp',category:'Vloerlamp',price:249,oldPrice:299,description:'Een spiraalvormig meesterwerk dat licht en schaduw laat dansen over je muren.',specs:['E27 fitting','PLA materiaal','H 160cm','Dimbaar'],images:[],badge:'sale'},
-    {id:'cocoon',name:'Cocoon Hanglamp',category:'Hanglamp',price:159,description:'Een cocon van licht. Gelaagde structuur die een betoverend patroon werpt op muren en plafond.',specs:['E27 fitting','PLA materiaal','Ø 30cm','Lichtgewicht'],images:[],badge:''},
-    {id:'facet',name:'Facet Bureaulamp',category:'Bureaulamp',price:99,description:'Geometrische facetten vangen het licht en creëren een diamant-effect. Compact en stijlvol.',specs:['E27 fitting','PLA materiaal','H 28cm','Compact design'],images:[],badge:'new'},
-    {id:'coral',name:'Coral Wandlamp',category:'Wandlamp',price:119,description:'Geïnspireerd door koraalriffen. Organische vormen die leven brengen aan elke muur.',specs:['E27 fitting','PLA materiaal','Ø 20cm','Inclusief bevestiging'],images:[],badge:''},
+    {id:'luna',name:'Luna Pendel',category:'Hanglamp',price:89,description:'Organische vormen ge\u00efnspireerd door de maan. Cre\u00ebert een zachte, warme gloed die elke ruimte transformeert.',specs:['E27 fitting','Duurzaam materiaal','\u00d8 25cm','Warm wit aanbevolen'],images:[],badge:'popular'},
+    {id:'terra',name:'Terra Tafellamp',category:'Tafellamp',price:129,description:'Aardse texturen en warme tinten. Perfect voor op je bureau of nachtkastje. Inclusief LED-lamp.',specs:['E27 fitting','Duurzaam materiaal','H 35cm','Inclusief LED-lamp'],images:[],badge:'new'},
+    {id:'helix',name:'Helix Muurlamp',category:'Muurlamp',price:249,oldPrice:299,description:'Een spiraalvormig meesterwerk dat licht en schaduw laat dansen over je muren.',specs:['E27 fitting','Duurzaam materiaal','H 160cm','Dimbaar'],images:[],badge:'sale'},
+    {id:'cocoon',name:'Cocoon Hanglamp',category:'Hanglamp',price:159,description:'Een cocon van licht. Gelaagde structuur die een betoverend patroon werpt op muren en plafond.',specs:['E27 fitting','Duurzaam materiaal','\u00d8 30cm','Lichtgewicht'],images:[],badge:''},
+    {id:'facet',name:'Facet Bureaulamp',category:'Bureaulamp',price:99,description:'Geometrische facetten vangen het licht en cre\u00ebren een diamant-effect. Compact en stijlvol.',specs:['E27 fitting','Duurzaam materiaal','H 28cm','Compact design'],images:[],badge:'new'},
+    {id:'coral',name:'Coral Wandlamp',category:'Wandlamp',price:119,description:'Ge\u00efnspireerd door koraalriffen. Organische vormen die leven brengen aan elke muur.',specs:['E27 fitting','Duurzaam materiaal','\u00d8 20cm','Inclusief bevestiging'],images:[],badge:''},
 ];
 
 // =====================
@@ -702,6 +765,7 @@ if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
     db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
+// Data cache
 let _products = null;
 let _promo = null;
 let _heroImage = null;
@@ -728,6 +792,9 @@ async function loadData() {
     if (_heroImage === null) _heroImage = localStorage.getItem('luma_hero_image') || '';
 }
 
+// =====================
+// DATA LAYER
+// =====================
 function getProducts() { return _products || defaultProducts; }
 function getPromo() { return _promo || ''; }
 function getHeroImage() { return _heroImage || ''; }
@@ -798,10 +865,10 @@ function renderCartItems() {
         const imgHTML = p.images && p.images.length > 0
             ? '<img src="'+p.images[0]+'" alt="'+p.name+'">'
             : '';
-        return '<div class="cart-item"><div class="cart-item-img">'+imgHTML+'</div><div class="cart-item-info"><h4>'+p.name+'</h4><span class="price">€'+p.price+'</span><div class="cart-item-qty"><button class="qty-btn" onclick="updateQty(\''+p.id+'\',-1)">−</button><span>'+item.qty+'</span><button class="qty-btn" onclick="updateQty(\''+p.id+'\',1)">+</button></div><button class="cart-item-remove" onclick="removeFromCart(\''+p.id+'\')">Verwijderen</button></div></div>';
+        return '<div class="cart-item"><div class="cart-item-img">'+imgHTML+'</div><div class="cart-item-info"><h4>'+p.name+'</h4><span class="price">\u20AC'+p.price+'</span><div class="cart-item-qty"><button class="qty-btn" onclick="updateQty(\''+p.id+'\',-1)">\u2212</button><span>'+item.qty+'</span><button class="qty-btn" onclick="updateQty(\''+p.id+'\',1)">+</button></div><button class="cart-item-remove" onclick="removeFromCart(\''+p.id+'\')">Verwijderen</button></div></div>';
     }).join('');
 
-    document.getElementById('cartTotal').textContent = '€' + getCartTotal();
+    document.getElementById('cartTotal').textContent = '\u20AC' + getCartTotal();
 }
 
 window.updateQty = updateQty;
@@ -818,12 +885,15 @@ function renderProducts() {
         var badgeHTML = p.badge === 'sale' ? '<div class="product-badge badge-sale">Sale</div>'
             : p.badge === 'new' ? '<div class="product-badge badge-new">Nieuw</div>'
             : p.badge === 'popular' ? '<div class="product-badge badge-popular">Populair</div>' : '';
+
         var imgHTML = p.images && p.images.length > 0
             ? '<img src="'+p.images[0]+'" alt="'+p.name+'" loading="lazy">'
             : '';
+
         var priceHTML = p.oldPrice
-            ? '<span class="price-old">€'+p.oldPrice+'</span><span class="price price-sale">€'+p.price+'</span>'
-            : '<span class="price">€'+p.price+'</span>';
+            ? '<span class="price-old">\u20AC'+p.oldPrice+'</span><span class="price price-sale">\u20AC'+p.price+'</span>'
+            : '<span class="price">\u20AC'+p.price+'</span>';
+
         return '<div class="product-card" onclick="openProduct(\''+p.id+'\')">'+badgeHTML+'<div class="product-images">'+imgHTML+'</div><div class="product-info"><div class="product-cat">'+p.category+'</div><h3>'+p.name+'</h3><p class="desc">'+p.description+'</p><div class="product-bottom"><div>'+priceHTML+'</div><button class="btn-add" onclick="event.stopPropagation();addToCart(\''+p.id+'\')">Bestel</button></div></div></div>';
     }).join('');
 }
@@ -835,9 +905,11 @@ window.openProduct = function(id) {
     var products = getProducts();
     var p = products.find(function(pr) { return pr.id === id; });
     if (!p) return;
+
     var mainImg = document.getElementById('modalMainImg');
     var thumbs = document.getElementById('modalThumbs');
     var details = document.getElementById('modalDetails');
+
     if (p.images && p.images.length > 0) {
         mainImg.innerHTML = '<img src="'+p.images[0]+'" alt="'+p.name+'">';
         thumbs.innerHTML = p.images.map(function(img, i) {
@@ -849,10 +921,13 @@ window.openProduct = function(id) {
         thumbs.innerHTML = '';
         thumbs.style.display = 'none';
     }
+
     var priceHTML = p.oldPrice
-        ? '<span class="price-old">€'+p.oldPrice+'</span> <span class="price price-sale">€'+p.price+'</span>'
-        : '<span class="price">€'+p.price+'</span>';
+        ? '<span class="price-old">\u20AC'+p.oldPrice+'</span> <span class="price price-sale">\u20AC'+p.price+'</span>'
+        : '<span class="price">\u20AC'+p.price+'</span>';
+
     details.innerHTML = '<div class="product-cat">'+p.category+'</div><h2>'+p.name+'</h2><p class="desc">'+p.description+'</p><div style="margin-bottom:1.5rem">'+priceHTML+'</div><div class="modal-specs"><h4>Specificaties</h4><ul>'+p.specs.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div><p style="font-size:.78rem;color:var(--text-muted);margin-bottom:1.25rem">Alle prijzen zijn inclusief 21% BTW.</p><button class="btn btn-olive" onclick="addToCart(\''+p.id+'\')">In winkelwagen</button>';
+
     document.getElementById('modalOverlay').classList.add('active');
     document.body.style.overflow = 'hidden';
 };
@@ -960,7 +1035,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
         console.error('Betaalfout:', err);
         payBtn.textContent = 'Betalen via Mollie';
         payBtn.disabled = false;
-        alert('Er ging iets mis bij het aanmaken van de betaling. Probeer opnieuw of contacteer ons via hello@luma-lampen.be');
+        alert('Er ging iets mis bij het aanmaken van de betaling. Probeer opnieuw of contacteer ons via info@luma-lights.be');
     }
 });
 
@@ -987,6 +1062,7 @@ document.getElementById('hamburger').addEventListener('click', function() {
     document.getElementById('navLinks').classList.toggle('active');
 });
 
+// Close mobile menu on link click
 document.querySelectorAll('.nav-links a').forEach(function(link) {
     link.addEventListener('click', function() {
         document.getElementById('hamburger').classList.remove('active');
