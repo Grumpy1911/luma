@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luma — Beheer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --olive:#6B7C4E;--olive-light:#8A9B6A;--olive-dark:#4E5C38;
+            --bordeaux:#7A2E3B;
+            --beige:#F5F0EB;--beige-dark:#E8DFD4;
+            --grey:#4A4A4A;--grey-light:#888;--grey-border:#DDD5CC;
+            --brown:#5C3D2E;--white:#FFFFFF;
+            --font-h:'DM Serif Display',serif;--font-b:'DM Sans',sans-serif;
+            --r:12px;--r-sm:8px;
+            --shadow:0 4px 20px rgba(0,0,0,.08);
+        }
+        body{font-family:var(--font-b);background:var(--beige);color:var(--grey);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+        /* LOGIN */
+        .login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+        .login-box{background:var(--white);border-radius:var(--r);padding:3rem 2.5rem;max-width:380px;width:100%;box-shadow:var(--shadow);text-align:center}
+        .login-box .logo{font-family:var(--font-h);font-size:2rem;color:var(--brown);margin-bottom:.25rem}
+        .login-box .subtitle{color:var(--grey-light);font-size:.9rem;margin-bottom:2rem}
+        .login-box input{width:100%;padding:.75rem 1rem;border:1px solid var(--grey-border);border-radius:var(--r-sm);font-family:var(--font-b);font-size:.95rem;outline:none;margin-bottom:1rem;text-align:center}
+        .login-box input:focus{border-color:var(--olive)}
+        .login-error{color:var(--bordeaux);font-size:.85rem;margin-bottom:.75rem;display:none}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 2rem;border-radius:50px;font-family:var(--font-b);font-size:.9rem;font-weight:600;cursor:pointer;text-decoration:none;border:none;transition:all .2s}
+        .btn-olive{background:var(--olive);color:#fff}
+        .btn-olive:hover{background:var(--olive-dark)}
+        .btn-outline{background:transparent;color:var(--olive);border:2px solid var(--olive)}
+        .btn-outline:hover{background:var(--olive);color:#fff}
+        .btn-bordeaux{background:var(--bordeaux);color:#fff}
+        .btn-bordeaux:hover{background:#8c3546}
+        .btn-sm{padding:.5rem 1.25rem;font-size:.8rem}
+        .btn-block{width:100%}
+
+        /* LAYOUT */
+        .admin{display:none}
+        .admin.active{display:flex;min-height:100vh}
+        .sidebar{width:240px;background:var(--brown);color:rgba(255,255,255,.8);padding:1.5rem 0;flex-shrink:0;display:flex;flex-direction:column}
+        .sidebar-logo{font-family:var(--font-h);font-size:1.4rem;color:#fff;padding:0 1.5rem;margin-bottom:.25rem}
+        .sidebar-sub{font-size:.75rem;color:rgba(255,255,255,.4);padding:0 1.5rem;margin-bottom:2rem}
+        .sidebar-nav{list-style:none;flex:1}
+        .sidebar-nav li a{display:flex;align-items:center;gap:.75rem;padding:.75rem 1.5rem;color:rgba(255,255,255,.6);text-decoration:none;font-size:.9rem;font-weight:500;transition:all .2s;border-left:3px solid transparent}
+        .sidebar-nav li a:hover{background:rgba(255,255,255,.05);color:#fff}
+        .sidebar-nav li a.active{background:rgba(255,255,255,.08);color:#fff;border-left-color:var(--olive-light)}
+        .sidebar-bottom{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.1);margin-top:auto}
+        .sidebar-bottom a{color:rgba(255,255,255,.5);text-decoration:none;font-size:.8rem;transition:color .2s}
+        .sidebar-bottom a:hover{color:#fff}
+
+        .main{flex:1;overflow-y:auto;max-height:100vh}
+        .main-header{background:var(--white);border-bottom:1px solid var(--grey-border);padding:1.25rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+        .main-header h1{font-family:var(--font-h);font-size:1.5rem;color:var(--brown);font-weight:400}
+        .main-content{padding:2rem}
+
+        /* TABS */
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+
+        /* PRODUCT TABLE */
+        .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+        .product-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+        .product-table th{background:var(--beige-dark);text-align:left;padding:.75rem 1rem;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--grey-light)}
+        .product-table td{padding:.75rem 1rem;border-top:1px solid var(--grey-border);font-size:.9rem;vertical-align:middle}
+        .product-table tr:hover td{background:var(--beige)}
+        .table-img{width:50px;height:50px;border-radius:var(--r-sm);overflow:hidden;background:var(--beige-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .table-img img{width:100%;height:100%;object-fit:cover}
+        .table-badge{padding:.15rem .5rem;border-radius:50px;font-size:.7rem;font-weight:600;display:inline-block}
+        .table-badge.sale{background:rgba(122,46,59,.1);color:var(--bordeaux)}
+        .table-badge.new{background:rgba(107,124,78,.1);color:var(--olive)}
+        .table-badge.popular{background:rgba(92,61,46,.1);color:var(--brown)}
+        .table-actions{display:flex;gap:.35rem}
+        .table-actions button{background:var(--beige);border:1px solid var(--grey-border);border-radius:var(--r-sm);padding:.35rem .6rem;font-size:.75rem;cursor:pointer;transition:all .2s;color:var(--grey)}
+        .table-actions button:hover{background:var(--beige-dark)}
+        .table-actions .delete:hover{background:rgba(122,46,59,.1);color:var(--bordeaux);border-color:var(--bordeaux)}
+
+        /* FORM MODAL */
+        .form-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center;padding:1rem}
+        .form-overlay.active{display:flex}
+        .form-modal{background:var(--white);border-radius:var(--r);max-width:700px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem}
+        .form-modal h2{font-family:var(--font-h);font-size:1.3rem;color:var(--brown);font-weight:400;margin-bottom:1.5rem}
+        .form-group{margin-bottom:1rem}
+        .form-group label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--grey-light);margin-bottom:.3rem}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:.7rem .85rem;border:1px solid var(--grey-border);border-radius:var(--r-sm);font-family:var(--font-b);font-size:.9rem;color:var(--grey);outline:none;transition:border-color .2s}
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--olive)}
+        .form-group textarea{resize:vertical;min-height:80px}
+        .form-group select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .85rem center}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .form-hint{font-size:.75rem;color:var(--grey-light);margin-top:.2rem}
+        .form-actions{display:flex;gap:.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--grey-border)}
+
+        /* IMAGE UPLOAD */
+        .image-upload-area{border:2px dashed var(--grey-border);border-radius:var(--r-sm);padding:2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--beige);margin-bottom:.75rem}
+        .image-upload-area:hover,.image-upload-area.dragover{border-color:var(--olive);background:rgba(107,124,78,.05)}
+        .image-upload-area p{color:var(--grey-light);font-size:.85rem}
+        .image-upload-area .icon{font-size:1.5rem;display:block;margin-bottom:.5rem}
+        .image-previews{display:flex;gap:.5rem;flex-wrap:wrap}
+        .image-preview{width:80px;height:80px;border-radius:var(--r-sm);overflow:hidden;position:relative;border:1px solid var(--grey-border);background:var(--beige-dark)}
+        .image-preview img{width:100%;height:100%;object-fit:cover}
+        .image-preview .remove{position:absolute;top:2px;right:2px;background:var(--bordeaux);color:#fff;border:none;width:20px;height:20px;border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+        .image-preview:hover .remove{opacity:1}
+
+        /* PROMO PANEL */
+        .promo-panel{background:var(--white);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow);max-width:600px}
+        .promo-panel h3{font-family:var(--font-h);font-size:1.1rem;color:var(--brown);font-weight:400;margin-bottom:1rem}
+        .promo-preview{background:var(--olive);color:#fff;text-align:center;padding:.5rem 1rem;font-size:.85rem;border-radius:var(--r-sm);margin-top:1rem;min-height:36px;display:flex;align-items:center;justify-content:center}
+        .promo-preview:empty::after{content:'Geen promotie actief';opacity:.5}
+
+        /* HERO IMAGE PANEL */
+        .hero-panel{background:var(--white);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow);max-width:600px;margin-top:1.5rem}
+        .hero-panel h3{font-family:var(--font-h);font-size:1.1rem;color:var(--brown);font-weight:400;margin-bottom:1rem}
+        .hero-preview{aspect-ratio:16/9;background:var(--beige-dark);border-radius:var(--r-sm);overflow:hidden;display:flex;align-items:center;justify-content:center;margin-top:1rem;max-width:400px}
+        .hero-preview img{width:100%;height:100%;object-fit:cover}
+        .hero-preview .placeholder{font-size:2rem;opacity:.2}
+
+        /* STATS */
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+        .stat-card{background:var(--white);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow)}
+        .stat-card .label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--grey-light);margin-bottom:.25rem}
+        .stat-card .value{font-family:var(--font-h);font-size:1.75rem;color:var(--brown)}
+
+        @media(max-width:768px){
+            .sidebar{display:none}
+            .stats-grid{grid-template-columns:repeat(2,1fr)}
+            .form-row{grid-template-columns:1fr}
+            .form-modal{padding:1.5rem}
+            .product-table{font-size:.8rem}
+            .product-table th:nth-child(4),.product-table td:nth-child(4){display:none}
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <div class="logo">Luma</div>
+        <div class="subtitle">Beheerpaneel</div>
+        <div class="login-error" id="loginError">Ongeldig wachtwoord</div>
+        <input type="password" id="loginPass" placeholder="Wachtwoord" autofocus>
+        <button class="btn btn-olive btn-block" id="loginBtn">Inloggen</button>
+    </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin" id="admin">
+    <aside class="sidebar">
+        <div class="sidebar-logo">Luma</div>
+        <div class="sidebar-sub">Beheerpaneel</div>
+        <ul class="sidebar-nav">
+            <li><a href="#" class="active" data-tab="dashboard">Dashboard</a></li>
+            <li><a href="#" data-tab="products">Producten</a></li>
+            <li><a href="#" data-tab="promo">Promoties</a></li>
+            <li><a href="#" data-tab="instellingen">Instellingen</a></li>
+        </ul>
+        <div class="sidebar-bottom">
+            <a href="./" target="_blank">Bekijk webshop &rarr;</a>
+        </div>
+    </aside>
+
+    <div class="main">
+        <div class="main-header">
+            <h1 id="pageTitle">Dashboard</h1>
+            <a href="./" target="_blank" class="btn btn-outline btn-sm">Bekijk webshop</a>
+        </div>
+        <div class="main-content">
+
+            <!-- DASHBOARD -->
+            <div class="tab-content active" id="tab-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="label">Producten</div><div class="value" id="statProducts">0</div></div>
+                    <div class="stat-card"><div class="label">Met foto's</div><div class="value" id="statWithImages">0</div></div>
+                    <div class="stat-card"><div class="label">Promoties</div><div class="value" id="statPromo">0</div></div>
+                    <div class="stat-card"><div class="label">Prijsbereik</div><div class="value" id="statPriceRange">-</div></div>
+                </div>
+                <div style="background:var(--white);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow)">
+                    <h3 style="font-family:var(--font-h);color:var(--brown);font-weight:400;margin-bottom:1rem">Welkom bij Luma Beheer</h3>
+                    <p style="color:var(--grey-light);line-height:1.7;max-width:600px">
+                        Hier kan je je producten beheren, foto's toevoegen en promoties instellen.
+                        Wijzigingen worden direct zichtbaar in de webshop.
+                    </p>
+                    <ul style="margin-top:1rem;margin-left:1.5rem;color:var(--grey-light);line-height:2">
+                        <li><strong>Producten</strong> — Voeg lampen toe, wijzig prijzen en beschrijvingen, upload meerdere foto's</li>
+                        <li><strong>Promoties</strong> — Stel een promotiebalk in bovenaan de webshop + hero-afbeelding</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PRODUCTS -->
+            <div class="tab-content" id="tab-products">
+                <div class="toolbar">
+                    <p style="color:var(--grey-light);font-size:.9rem" id="productCount">0 producten</p>
+                    <button class="btn btn-olive btn-sm" id="addProductBtn">+ Nieuw product</button>
+                </div>
+                <table class="product-table">
+                    <thead>
+                        <tr><th style="width:60px">Foto</th><th>Product</th><th>Categorie</th><th>Beschrijving</th><th>Prijs</th><th>Badge</th><th style="width:100px">Acties</th></tr>
+                    </thead>
+                    <tbody id="productTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- PROMO -->
+            <div class="tab-content" id="tab-promo">
+                <div class="promo-panel">
+                    <h3>Promotiebalk</h3>
+                    <p style="font-size:.85rem;color:var(--grey-light);margin-bottom:1rem">Deze tekst verschijnt bovenaan de webshop. Laat leeg om te verbergen.</p>
+                    <div class="form-group">
+                        <label>Promotietekst</label>
+                        <input type="text" id="promoText" placeholder="bv. Gratis verzending deze week — gebruik code LUMA25">
+                    </div>
+                    <button class="btn btn-olive btn-sm" id="savePromoBtn">Opslaan</button>
+                    <div class="promo-preview" id="promoPreview"></div>
+                </div>
+
+                <div class="hero-panel">
+                    <h3>Hero afbeelding</h3>
+                    <p style="font-size:.85rem;color:var(--grey-light);margin-bottom:1rem">De hoofdafbeelding op de homepage naast de titel.</p>
+                    <div class="image-upload-area" id="heroUploadArea">
+                        <span class="icon" style="font-size:1.2rem;color:var(--grey-light)">+</span>
+                        <p>Klik of sleep een afbeelding hierheen</p>
+                        <input type="file" accept="image/*" style="display:none" id="heroFileInput">
+                    </div>
+                    <button class="btn btn-sm btn-outline" id="removeHeroBtn" style="display:none">Verwijderen</button>
+                    <div class="hero-preview" id="heroPreview">
+                        <span class="placeholder" style="font-size:1rem;color:var(--grey-light)">Geen afbeelding</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INSTELLINGEN -->
+            <div class="tab-content" id="tab-instellingen">
+                <div class="promo-panel" style="max-width:480px">
+                    <h3>Wachtwoord wijzigen</h3>
+                    <p style="font-size:.85rem;color:var(--grey-light);margin-bottom:1.5rem">Wijzig het wachtwoord voor het beheerpaneel. Het nieuwe wachtwoord wordt lokaal opgeslagen in je browser.</p>
+                    <div id="passMsg" style="display:none;padding:.6rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem"></div>
+                    <div class="form-group">
+                        <label>Huidig wachtwoord</label>
+                        <input type="password" id="passOld" autocomplete="current-password">
+                    </div>
+                    <div class="form-group">
+                        <label>Nieuw wachtwoord</label>
+                        <input type="password" id="passNew" autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label>Bevestig nieuw wachtwoord</label>
+                        <input type="password" id="passConfirm" autocomplete="new-password">
+                    </div>
+                    <button class="btn btn-olive btn-sm" id="savePassBtn">Wachtwoord opslaan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PRODUCT FORM MODAL -->
+<div class="form-overlay" id="formOverlay">
+    <div class="form-modal">
+        <h2 id="formTitle">Nieuw product</h2>
+        <form id="productForm">
+            <input type="hidden" id="editId" value="">
+            <div class="form-row">
+                <div class="form-group"><label>Productnaam</label><input type="text" id="pName" required placeholder="bv. Luna Pendel"></div>
+                <div class="form-group"><label>Categorie</label>
+                    <select id="pCategory"><option>Hanglamp</option><option>Tafellamp</option><option>Muurlamp</option><option>Bureaulamp</option><option>Wandlamp</option></select>
+                </div>
+            </div>
+            <div class="form-group"><label>Beschrijving</label><textarea id="pDesc" required placeholder="Beschrijf het product..."></textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>Prijs (&#8364;)</label><input type="number" id="pPrice" required min="0" step="1" placeholder="89"></div>
+                <div class="form-group"><label>Oude prijs (&#8364;) — optioneel</label><input type="number" id="pOldPrice" min="0" step="1" placeholder="Voor kortingen"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Badge</label>
+                    <select id="pBadge"><option value="">Geen</option><option value="new">Nieuw</option><option value="sale">Sale</option><option value="popular">Populair</option></select>
+                </div>
+                <div class="form-group"><label>Specificaties</label><input type="text" id="pSpecs" placeholder="E27 fitting, PLA, Ø 25cm (komma-gescheiden)"></div>
+            </div>
+            <div class="form-group">
+                <label>Foto's (meerdere mogelijk)</label>
+                <div class="image-upload-area" id="imageUploadArea">
+                    <span class="icon" style="font-size:1.2rem;color:var(--grey-light)">+</span>
+                    <p>Klik of sleep foto's hierheen (meerdere mogelijk)</p>
+                    <input type="file" accept="image/*" multiple style="display:none" id="imageFileInput">
+                </div>
+                <div class="image-previews" id="imagePreviews"></div>
+                <p class="form-hint">Maximaal 5 foto's. De eerste foto wordt als hoofdfoto gebruikt.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline btn-sm" id="cancelForm">Annuleren</button>
+                <button type="submit" class="btn btn-olive btn-sm" id="saveProductBtn">Opslaan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// =====================
+// AUTH
+// =====================
+const DEFAULT_PASS = 'luma2026';
+function getPass() { return localStorage.getItem('luma_admin_pass') || DEFAULT_PASS; }
+let authed = sessionStorage.getItem('luma_admin') === '1';
+
+function checkAuth() {
+    if (authed) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('admin').classList.add('active');
+        initAdmin();
+    }
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogin() {
+    const pass = document.getElementById('loginPass').value;
+    if (pass === getPass()) {
+        authed = true;
+        sessionStorage.setItem('luma_admin', '1');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('admin').classList.add('active');
+        initAdmin();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+    }
+}
+
+// =====================
+// WACHTWOORD WIJZIGEN
+// =====================
+document.getElementById('savePassBtn').addEventListener('click', function() {
+    const old = document.getElementById('passOld').value;
+    const nw = document.getElementById('passNew').value.trim();
+    const confirm = document.getElementById('passConfirm').value.trim();
+    const msgEl = document.getElementById('passMsg');
+
+    function showMsg(text, ok) {
+        msgEl.textContent = text;
+        msgEl.style.display = 'block';
+        msgEl.style.background = ok ? 'rgba(107,124,78,.12)' : 'rgba(122,46,59,.1)';
+        msgEl.style.color = ok ? 'var(--olive-dark)' : 'var(--bordeaux)';
+    }
+
+    if (old !== getPass()) { showMsg('Huidig wachtwoord is onjuist.', false); return; }
+    if (nw.length < 6) { showMsg('Nieuw wachtwoord moet minstens 6 tekens bevatten.', false); return; }
+    if (nw !== confirm) { showMsg('Wachtwoorden komen niet overeen.', false); return; }
+
+    localStorage.setItem('luma_admin_pass', nw);
+    document.getElementById('passOld').value = '';
+    document.getElementById('passNew').value = '';
+    document.getElementById('passConfirm').value = '';
+    showMsg('Wachtwoord succesvol gewijzigd!', true);
+});
+
+// =====================
+// DATA
+// =====================
+const defaultProducts = [
+    {id:'luna',name:'Luna Pendel',category:'Hanglamp',price:89,description:'Organische vormen geïnspireerd door de maan. Creëert een zachte, warme gloed die elke ruimte transformeert.',specs:['E27 fitting','PLA materiaal','Ø 25cm','Warm wit aanbevolen'],images:[],badge:'popular'},
+    {id:'terra',name:'Terra Tafellamp',category:'Tafellamp',price:129,description:'Aardse texturen en warme tinten. Perfect voor op je bureau of nachtkastje. Inclusief LED-lamp.',specs:['E27 fitting','PLA materiaal','H 35cm','Inclusief LED-lamp'],images:[],badge:'new'},
+    {id:'helix',name:'Helix Muurlamp',category:'Muurlamp',price:249,oldPrice:299,description:'Een spiraalvormig meesterwerk dat licht en schaduw laat dansen over je muren. Ons paradepaardje.',specs:['E27 fitting','PLA materiaal','H 160cm','Dimbaar'],images:[],badge:'sale'},
+    {id:'cocoon',name:'Cocoon Hanglamp',category:'Hanglamp',price:159,description:'Een cocon van licht. Gelaagde structuur die een betoverend patroon werpt op muren en plafond.',specs:['E27 fitting','PLA materiaal','Ø 30cm','Lichtgewicht'],images:[],badge:''},
+    {id:'facet',name:'Facet Bureaulamp',category:'Bureaulamp',price:99,description:'Geometrische facetten vangen het licht en creëren een diamant-effect. Compact en stijlvol.',specs:['E27 fitting','PLA materiaal','H 28cm','Compact design'],images:[],badge:'new'},
+    {id:'coral',name:'Coral Wandlamp',category:'Wandlamp',price:119,description:'Geïnspireerd door koraalriffen. Organische vormen die leven brengen aan elke muur.',specs:['E27 fitting','PLA materiaal','Ø 20cm','Inclusief bevestiging'],images:[],badge:''},
+];
+
+// =====================
+// SUPABASE CONFIG
+// =====================
+const SUPABASE_URL = 'https://pgexambwfqchlkhlbywo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZXhhbWJ3ZnFjaGxraGxieXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjg4MTMsImV4cCI6MjA5MTk0NDgxM30.DjLTRsAUTf4r8XD3CgXt1cJRtzj4y8TnP2Y8lqNVp3U';
+
+let db = null;
+if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+
+let _products = null;
+
+async function loadData() {
+    if (db) {
+        try {
+            const { data } = await db.from('luma_data').select('*');
+            if (data && data.length > 0) {
+                data.forEach(row => {
+                    if (row.key === 'products') _products = row.value;
+                });
+            }
+        } catch(e) { console.warn('Supabase niet bereikbaar, localStorage fallback.'); }
+    }
+    if (!_products) {
+        const stored = localStorage.getItem('luma_products');
+        if (stored) { try { _products = JSON.parse(stored); } catch(e) {} }
+    }
+    if (!_products) _products = [...defaultProducts];
+}
+
+function getProducts() {
+    return _products || [...defaultProducts];
+}
+
+async function saveProducts(products) {
+    _products = products;
+    localStorage.setItem('luma_products', JSON.stringify(products));
+    if (db) {
+        try { await db.from('luma_data').upsert({ key: 'products', value: products }); }
+        catch(e) { console.warn('Supabase save failed:', e); }
+    }
+}
+
+// =====================
+// TABS
+// =====================
+const tabTitles = { dashboard: 'Dashboard', products: 'Producten', promo: 'Promoties & Hero', instellingen: 'Instellingen' };
+document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', e => {
+        e.preventDefault();
+        const tab = link.dataset.tab;
+        document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-'+tab).classList.add('active');
+        document.getElementById('pageTitle').textContent = tabTitles[tab] || tab;
+    });
+});
+
+// =====================
+// INIT
+// =====================
+async function initAdmin() {
+    await loadData();
+    renderProductTable();
+    renderDashboard();
+    renderPromoAdmin();
+    renderHeroAdmin();
+}
+
+// =====================
+// DASHBOARD
+// =====================
+function renderDashboard() {
+    const products = getProducts();
+    document.getElementById('statProducts').textContent = products.length;
+    document.getElementById('statWithImages').textContent = products.filter(p => p.images && p.images.length > 0).length;
+    document.getElementById('statPromo').textContent = (document.getElementById('promoText') && document.getElementById('promoText').value) ? '1' : '0';
+    if (products.length > 0) {
+        const prices = products.map(p => p.price);
+        document.getElementById('statPriceRange').textContent = '\u20AC'+Math.min(...prices)+' - \u20AC'+Math.max(...prices);
+    }
+}
+
+// =====================
+// PRODUCT TABLE
+// =====================
+function renderProductTable() {
+    const products = getProducts();
+    const tbody = document.getElementById('productTableBody');
+    document.getElementById('productCount').textContent = products.length + ' producten';
+
+    tbody.innerHTML = products.map(p => {
+        const imgHTML = p.images && p.images.length > 0
+            ? '<img src="'+p.images[0]+'" alt="">'
+            : '<span style="font-size:.75rem;color:var(--grey-light)">Geen foto</span>';
+        const badgeHTML = p.badge ? '<span class="table-badge '+p.badge+'">'+({sale:'Sale',new:'Nieuw',popular:'Populair'}[p.badge] || '')+'</span>' : '-';
+        const priceHTML = p.oldPrice ? '<span style="text-decoration:line-through;color:var(--grey-light);margin-right:.25rem">\u20AC'+p.oldPrice+'</span>\u20AC'+p.price : '\u20AC'+p.price;
+        const descShort = p.description.length > 50 ? p.description.slice(0,50)+'...' : p.description;
+
+        return `<tr>
+            <td><div class="table-img">${imgHTML}</div></td>
+            <td><strong>${p.name}</strong><br><span style="font-size:.75rem;color:var(--grey-light)">${(p.images||[]).length} foto's</span></td>
+            <td>${p.category}</td>
+            <td style="max-width:200px;font-size:.8rem;color:var(--grey-light)">${descShort}</td>
+            <td>${priceHTML}</td>
+            <td>${badgeHTML}</td>
+            <td><div class="table-actions">
+                <button onclick="editProduct('${p.id}')">&#9998;</button>
+                <button class="delete" onclick="deleteProduct('${p.id}')">&#128465;</button>
+            </div></td>
+        </tr>`;
+    }).join('');
+}
+
+// =====================
+// ADD / EDIT PRODUCT
+// =====================
+let currentImages = [];
+
+document.getElementById('addProductBtn').addEventListener('click', () => {
+    document.getElementById('formTitle').textContent = 'Nieuw product';
+    document.getElementById('editId').value = '';
+    document.getElementById('productForm').reset();
+    currentImages = [];
+    renderImagePreviews();
+    openFormModal();
+});
+
+function editProduct(id) {
+    const products = getProducts();
+    const p = products.find(pr => pr.id === id);
+    if (!p) return;
+
+    document.getElementById('formTitle').textContent = 'Product bewerken';
+    document.getElementById('editId').value = p.id;
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pCategory').value = p.category;
+    document.getElementById('pDesc').value = p.description;
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pOldPrice').value = p.oldPrice || '';
+    document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pSpecs').value = (p.specs || []).join(', ');
+    currentImages = [...(p.images || [])];
+    renderImagePreviews();
+    openFormModal();
+}
+window.editProduct = editProduct;
+
+async function deleteProduct(id) {
+    if (!confirm('Weet je zeker dat je dit product wilt verwijderen?')) return;
+    let products = getProducts();
+    products = products.filter(p => p.id !== id);
+    await saveProducts(products);
+    renderProductTable();
+    renderDashboard();
+}
+window.deleteProduct = deleteProduct;
+
+function openFormModal() {
+    document.getElementById('formOverlay').classList.add('active');
+}
+
+function closeFormModal() {
+    document.getElementById('formOverlay').classList.remove('active');
+}
+
+document.getElementById('cancelForm').addEventListener('click', closeFormModal);
+document.getElementById('formOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeFormModal();
+});
+
+document.getElementById('productForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    let products = getProducts();
+    const editId = document.getElementById('editId').value;
+
+    const productData = {
+        id: editId || 'p_' + Date.now(),
+        name: document.getElementById('pName').value.trim(),
+        category: document.getElementById('pCategory').value,
+        description: document.getElementById('pDesc').value.trim(),
+        price: parseInt(document.getElementById('pPrice').value),
+        oldPrice: document.getElementById('pOldPrice').value ? parseInt(document.getElementById('pOldPrice').value) : undefined,
+        badge: document.getElementById('pBadge').value,
+        specs: document.getElementById('pSpecs').value.split(',').map(s => s.trim()).filter(Boolean),
+        images: currentImages,
+    };
+
+    if (editId) {
+        const idx = products.findIndex(p => p.id === editId);
+        if (idx >= 0) products[idx] = productData;
+    } else {
+        products.push(productData);
+    }
+
+    await saveProducts(products);
+    closeFormModal();
+    renderProductTable();
+    renderDashboard();
+});
+
+// =====================
+// IMAGE UPLOAD
+// =====================
+const uploadArea = document.getElementById('imageUploadArea');
+const fileInput = document.getElementById('imageFileInput');
+
+uploadArea.addEventListener('click', () => fileInput.click());
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', () => {
+    handleFiles(fileInput.files);
+    fileInput.value = '';
+});
+
+function handleFiles(files) {
+    const remaining = 5 - currentImages.length;
+    const toProcess = Array.from(files).slice(0, remaining);
+    toProcess.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            // Resize to max 800px
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const max = 800;
+                let w = img.width, h = img.height;
+                if (w > max || h > max) {
+                    if (w > h) { h = Math.round(h * max / w); w = max; }
+                    else { w = Math.round(w * max / h); h = max; }
+                }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                currentImages.push(dataUrl);
+                renderImagePreviews();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderImagePreviews() {
+    const container = document.getElementById('imagePreviews');
+    container.innerHTML = currentImages.map((img, i) =>
+        `<div class="image-preview">
+            <img src="${img}" alt="">
+            <button class="remove" onclick="removeImage(${i})">&#10005;</button>
+        </div>`
+    ).join('');
+}
+
+function removeImage(idx) {
+    currentImages.splice(idx, 1);
+    renderImagePreviews();
+}
+window.removeImage = removeImage;
+
+// =====================
+// PROMO
+// =====================
+async function loadPromo() {
+    let promo = null;
+    if (db) {
+        try {
+            const { data } = await db.from('luma_data').select('value').eq('key', 'promo').single();
+            if (data) promo = data.value;
+        } catch(e) {}
+    }
+    if (promo === null) promo = localStorage.getItem('luma_promo') || '';
+    return promo;
+}
+
+async function renderPromoAdmin() {
+    const promo = await loadPromo();
+    document.getElementById('promoText').value = promo;
+    document.getElementById('promoPreview').innerHTML = promo;
+}
+
+document.getElementById('savePromoBtn').addEventListener('click', async () => {
+    const text = document.getElementById('promoText').value.trim();
+    localStorage.setItem('luma_promo', text);
+    if (db) {
+        try { await db.from('luma_data').upsert({ key: 'promo', value: text }); }
+        catch(e) { console.warn('Supabase save failed:', e); }
+    }
+    document.getElementById('promoPreview').innerHTML = text;
+    renderDashboard();
+    alert('Promotie opgeslagen! De webshop is bijgewerkt.');
+});
+
+// =====================
+// HERO IMAGE
+// =====================
+const heroUpload = document.getElementById('heroUploadArea');
+const heroInput = document.getElementById('heroFileInput');
+
+async function loadHeroImage() {
+    let img = null;
+    if (db) {
+        try {
+            const { data } = await db.from('luma_data').select('value').eq('key', 'hero_image').single();
+            if (data) img = data.value;
+        } catch(e) {}
+    }
+    if (img === null) img = localStorage.getItem('luma_hero_image') || '';
+    return img;
+}
+
+async function renderHeroAdmin() {
+    const img = await loadHeroImage();
+    const preview = document.getElementById('heroPreview');
+    const removeBtn = document.getElementById('removeHeroBtn');
+    if (img) {
+        preview.innerHTML = '<img src="'+img+'" alt="Hero">';
+        removeBtn.style.display = '';
+    } else {
+        preview.innerHTML = '<span class="placeholder" style="font-size:1rem;color:var(--grey-light)">Geen afbeelding</span>';
+        removeBtn.style.display = 'none';
+    }
+}
+
+heroUpload.addEventListener('click', () => heroInput.click());
+heroUpload.addEventListener('dragover', e => { e.preventDefault(); heroUpload.classList.add('dragover'); });
+heroUpload.addEventListener('dragleave', () => heroUpload.classList.remove('dragover'));
+heroUpload.addEventListener('drop', e => {
+    e.preventDefault();
+    heroUpload.classList.remove('dragover');
+    handleHeroFile(e.dataTransfer.files[0]);
+});
+heroInput.addEventListener('change', () => {
+    handleHeroFile(heroInput.files[0]);
+    heroInput.value = '';
+});
+
+function handleHeroFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = new Image();
+        img.onload = async () => {
+            const canvas = document.createElement('canvas');
+            const max = 1200;
+            let w = img.width, h = img.height;
+            if (w > max) { h = Math.round(h * max / w); w = max; }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            localStorage.setItem('luma_hero_image', dataUrl);
+            if (db) {
+                try { await db.from('luma_data').upsert({ key: 'hero_image', value: dataUrl }); }
+                catch(e) { console.warn('Supabase save failed:', e); }
+            }
+            renderHeroAdmin();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+document.getElementById('removeHeroBtn').addEventListener('click', async () => {
+    localStorage.removeItem('luma_hero_image');
+    if (db) {
+        try { await db.from('luma_data').upsert({ key: 'hero_image', value: '' }); }
+        catch(e) {}
+    }
+    renderHeroAdmin();
+});
+
+// =====================
+// INIT
+// =====================
+checkAuth();
+
+})();
+</script>
+</body>
+</html>
