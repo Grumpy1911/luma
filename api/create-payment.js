@@ -31,7 +31,6 @@ module.exports = async (req, res) => {
             description: `Luma bestelling — ${beschrijving}`,
             redirectUrl: `${baseUrl}/bedankt.html`,
             webhookUrl: `${baseUrl}/api/webhook`,
-            profileId: process.env.MOLLIE_PROFILE_ID,
             metadata: {
                 klant_naam: `${orderData.fname} ${orderData.lname}`,
                 klant_email: orderData.email,
