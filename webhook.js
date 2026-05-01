@@ -47,28 +47,28 @@ module.exports = async (req, res) => {
                 console.error('Supabase opslaan mislukt:', e);
             }
 
-            // ── 2. Stuur e-mail naar info@luma-lights.be via SendGrid ────────
-            if (process.env.SENDGRID_API_KEY) {
+            // ── 2. Stuur e-mail naar info@luma-lights.be via Resend ───────────
+            if (process.env.RESEND_API_KEY) {
                 try {
-                    await fetch('https://api.sendgrid.com/v3/mail/send', {
+                    await fetch('https://api.resend.com/emails', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`
+                            'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
                         },
                         body: JSON.stringify({
-                            personalizations: [{ to: [{ email: 'info@luma-lights.be' }] }],
-                            from: { email: 'info@luma-lights.be', name: 'Luma Webshop' },
+                            from: 'Luma Webshop <onboarding@resend.dev>',
+                            to: ['info@luma-lights.be'],
                             subject: `Nieuwe bestelling — ${meta.klant_naam} (${meta.totaal})`,
-                            content: [{ type: 'text/html', value: buildEmailHTML(meta, bestelling) }]
+                            html: buildEmailHTML(meta, bestelling)
                         })
                     });
-                    console.log('✅ E-mail verstuurd naar info@luma-lights.be via SendGrid');
+                    console.log('✅ E-mail verstuurd naar info@luma-lights.be via Resend');
                 } catch(e) {
                     console.error('E-mail versturen mislukt:', e);
                 }
             } else {
-                console.warn('⚠️ SENDGRID_API_KEY niet ingesteld — geen e-mail verstuurd');
+                console.warn('⚠️ RESEND_API_KEY niet ingesteld — geen e-mail verstuurd');
             }
         }
 
