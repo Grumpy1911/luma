@@ -124,6 +124,24 @@
         .stat-card{background:var(--white);border-radius:var(--r);padding:1.5rem;box-shadow:var(--shadow)}
         .stat-card .label{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--grey-light);margin-bottom:.25rem}
         .stat-card .value{font-family:var(--font-h);font-size:1.75rem;color:var(--brown)}
+        .stat-card.highlight{border-left:3px solid var(--bordeaux)}
+
+        /* ORDER STATUS */
+        .order-status{padding:.2rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;display:inline-block;letter-spacing:.3px}
+        .order-status.nieuw{background:rgba(122,46,59,.12);color:var(--bordeaux)}
+        .order-status.in_verwerking{background:rgba(200,150,0,.12);color:#a07800}
+        .order-status.verzonden{background:rgba(107,124,78,.12);color:var(--olive-dark)}
+        .order-actions-wrap{display:flex;gap:.3rem;flex-wrap:wrap}
+        .order-actions-wrap button{padding:.3rem .7rem;border-radius:50px;border:1px solid var(--grey-border);font-size:.72rem;font-weight:600;cursor:pointer;transition:all .2s;background:var(--beige);color:var(--grey)}
+        .order-actions-wrap button:hover{background:var(--olive);color:#fff;border-color:var(--olive)}
+        .order-row td{vertical-align:middle}
+        .order-detail{font-size:.75rem;color:var(--grey-light);line-height:1.5}
+        .empty-state{text-align:center;padding:4rem 2rem;color:var(--grey-light)}
+        .empty-state .icon{font-size:2.5rem;margin-bottom:1rem}
+
+        /* STOCK */
+        .stock-low{color:var(--bordeaux);font-weight:700}
+        .stock-ok{color:var(--olive-dark);font-weight:600}
 
         @media(max-width:768px){
             .sidebar{display:none}
@@ -132,6 +150,7 @@
             .form-modal{padding:1.5rem}
             .product-table{font-size:.8rem}
             .product-table th:nth-child(4),.product-table td:nth-child(4){display:none}
+            .order-table th:nth-child(3),.order-table td:nth-child(3){display:none}
         }
     </style>
 </head>
@@ -154,10 +173,11 @@
         <div class="sidebar-logo">Luma</div>
         <div class="sidebar-sub">Beheerpaneel</div>
         <ul class="sidebar-nav">
-            <li><a href="#" class="active" data-tab="dashboard">Dashboard</a></li>
-            <li><a href="#" data-tab="products">Producten</a></li>
-            <li><a href="#" data-tab="promo">Promoties</a></li>
-            <li><a href="#" data-tab="instellingen">Instellingen</a></li>
+            <li><a href="#" class="active" data-tab="dashboard">📊 Dashboard</a></li>
+            <li><a href="#" data-tab="orders">📦 Bestellingen <span id="newOrdersBadge" style="display:none;background:var(--bordeaux);color:#fff;font-size:.65rem;padding:.1rem .4rem;border-radius:50px;margin-left:.3rem">0</span></a></li>
+            <li><a href="#" data-tab="products">🛍 Producten</a></li>
+            <li><a href="#" data-tab="promo">📢 Promoties</a></li>
+            <li><a href="#" data-tab="instellingen">⚙️ Instellingen</a></li>
         </ul>
         <div class="sidebar-bottom">
             <a href="./" target="_blank">Bekijk webshop &rarr;</a>
@@ -174,10 +194,10 @@
             <!-- DASHBOARD -->
             <div class="tab-content active" id="tab-dashboard">
                 <div class="stats-grid">
+                    <div class="stat-card highlight"><div class="label">Nieuwe orders</div><div class="value" id="statNewOrders">–</div></div>
+                    <div class="stat-card"><div class="label">Totaal orders</div><div class="value" id="statTotalOrders">–</div></div>
                     <div class="stat-card"><div class="label">Producten</div><div class="value" id="statProducts">0</div></div>
-                    <div class="stat-card"><div class="label">Met foto's</div><div class="value" id="statWithImages">0</div></div>
-                    <div class="stat-card"><div class="label">Promoties</div><div class="value" id="statPromo">0</div></div>
-                    <div class="stat-card"><div class="label">Prijsbereik</div><div class="value" id="statPriceRange">-</div></div>
+                    <div class="stat-card"><div class="label">Lage stock (&lt;3)</div><div class="value" id="statLowStock">–</div></div>
                 </div>
                 <div style="background:var(--white);border-radius:var(--r);padding:2rem;box-shadow:var(--shadow)">
                     <h3 style="font-family:var(--font-h);color:var(--brown);font-weight:400;margin-bottom:1rem">Welkom bij Luma Beheer</h3>
@@ -192,6 +212,17 @@
                 </div>
             </div>
 
+            <!-- BESTELLINGEN -->
+            <div class="tab-content" id="tab-orders">
+                <div class="toolbar">
+                    <p style="color:var(--grey-light);font-size:.9rem" id="orderCount">Bestellingen laden...</p>
+                    <button class="btn btn-outline btn-sm" id="refreshOrdersBtn">↻ Vernieuwen</button>
+                </div>
+                <div id="ordersContainer">
+                    <div class="empty-state"><div class="icon">📦</div><p>Bestellingen laden...</p></div>
+                </div>
+            </div>
+
             <!-- PRODUCTS -->
             <div class="tab-content" id="tab-products">
                 <div class="toolbar">
@@ -200,7 +231,7 @@
                 </div>
                 <table class="product-table">
                     <thead>
-                        <tr><th style="width:60px">Foto</th><th>Product</th><th>Categorie</th><th>Beschrijving</th><th>Prijs</th><th>Badge</th><th style="width:100px">Acties</th></tr>
+                        <tr><th style="width:60px">Foto</th><th>Product</th><th>Categorie</th><th>Beschrijving</th><th>Prijs</th><th>Stock</th><th>Badge</th><th style="width:100px">Acties</th></tr>
                     </thead>
                     <tbody id="productTableBody"></tbody>
                 </table>
@@ -280,8 +311,9 @@
                 <div class="form-group"><label>Badge</label>
                     <select id="pBadge"><option value="">Geen</option><option value="new">Nieuw</option><option value="sale">Sale</option><option value="popular">Populair</option></select>
                 </div>
-                <div class="form-group"><label>Specificaties</label><input type="text" id="pSpecs" placeholder="E27 fitting, PLA, Ø 25cm (komma-gescheiden)"></div>
+                <div class="form-group"><label>Stock (aantal stuks)</label><input type="number" id="pStock" min="0" step="1" placeholder="bv. 5"></div>
             </div>
+            <div class="form-group"><label>Specificaties</label><input type="text" id="pSpecs" placeholder="E27 fitting, PLA, Ø 25cm (komma-gescheiden)"></div>
             <div class="form-group">
                 <label>Foto's (meerdere mogelijk)</label>
                 <div class="image-upload-area" id="imageUploadArea">
@@ -421,7 +453,7 @@ async function saveProducts(products) {
 // =====================
 // TABS
 // =====================
-const tabTitles = { dashboard: 'Dashboard', products: 'Producten', promo: 'Promoties & Hero', instellingen: 'Instellingen' };
+const tabTitles = { dashboard: 'Dashboard', orders: 'Bestellingen', products: 'Producten', promo: 'Promoties & Hero', instellingen: 'Instellingen' };
 document.querySelectorAll('.sidebar-nav a').forEach(link => {
     link.addEventListener('click', e => {
         e.preventDefault();
@@ -440,10 +472,105 @@ document.querySelectorAll('.sidebar-nav a').forEach(link => {
 async function initAdmin() {
     await loadData();
     renderProductTable();
+    await loadOrders();
     renderDashboard();
     renderPromoAdmin();
     renderHeroAdmin();
 }
+
+// =====================
+// BESTELLINGEN
+// =====================
+let _orders = [];
+
+async function loadOrders() {
+    if (!db) { _orders = []; renderOrders(); return; }
+    try {
+        const { data, error } = await db.from('orders').select('*').order('created_at', { ascending: false });
+        _orders = error ? [] : (data || []);
+    } catch(e) { _orders = []; }
+    renderOrders();
+    updateOrdersBadge();
+}
+
+function updateOrdersBadge() {
+    const nieuw = _orders.filter(o => o.status === 'nieuw').length;
+    const badge = document.getElementById('newOrdersBadge');
+    if (nieuw > 0) {
+        badge.textContent = nieuw;
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function renderOrders() {
+    const container = document.getElementById('ordersContainer');
+    const countEl = document.getElementById('orderCount');
+    if (!countEl) return;
+
+    if (!db) {
+        countEl.textContent = 'Supabase niet verbonden';
+        container.innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Zorg dat de <strong>orders</strong> tabel bestaat in Supabase.<br>Zie instructies onderaan deze pagina.</p></div>';
+        return;
+    }
+
+    countEl.textContent = _orders.length + ' bestellingen';
+
+    if (_orders.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Nog geen bestellingen ontvangen.<br>Ze verschijnen hier automatisch na een betaalde bestelling.</p></div>';
+        return;
+    }
+
+    const statusLabel = { nieuw: 'Nieuw', in_verwerking: 'In verwerking', verzonden: 'Verzonden' };
+    const rows = _orders.map(o => {
+        const items = Array.isArray(o.bestelling) ? o.bestelling.map(i => `${i.qty}× ${i.name}`).join(', ') : '-';
+        const datum = new Date(o.created_at).toLocaleDateString('nl-BE', { day:'2-digit', month:'2-digit', year:'numeric' });
+        const status = o.status || 'nieuw';
+        return `<tr class="order-row">
+            <td><div style="font-weight:600;font-size:.9rem">${o.klant_naam || '-'}</div><div class="order-detail">${o.klant_email || ''}<br>${o.klant_adres || ''}</div></td>
+            <td><div style="font-size:.85rem;max-width:220px">${items}</div></td>
+            <td><div style="font-weight:600">${o.totaal || '-'}</div><div class="order-detail">${datum}</div></td>
+            <td><span class="order-status ${status}">${statusLabel[status] || status}</span></td>
+            <td><div class="order-actions-wrap">
+                ${status !== 'in_verwerking' && status !== 'verzonden' ? `<button onclick="updateOrderStatus('${o.id}','in_verwerking')">In verwerking</button>` : ''}
+                ${status !== 'verzonden' ? `<button onclick="updateOrderStatus('${o.id}','verzonden')">Verzonden</button>` : ''}
+                ${status === 'verzonden' ? `<button onclick="updateOrderStatus('${o.id}','nieuw')" style="color:var(--grey-light)">Reset</button>` : ''}
+            </div></td>
+        </tr>`;
+    }).join('');
+
+    container.innerHTML = `<table class="product-table order-table" style="table-layout:auto">
+        <thead><tr>
+            <th>Klant</th>
+            <th>Bestelling</th>
+            <th>Totaal / Datum</th>
+            <th>Status</th>
+            <th>Actie</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+    if (!db) return;
+    try {
+        await db.from('orders').update({ status: newStatus }).eq('id', orderId);
+        const order = _orders.find(o => o.id === orderId);
+        if (order) order.status = newStatus;
+        renderOrders();
+        updateOrdersBadge();
+        renderDashboard();
+    } catch(e) {
+        alert('Status bijwerken mislukt. Probeer opnieuw.');
+    }
+}
+window.updateOrderStatus = updateOrderStatus;
+
+document.getElementById('refreshOrdersBtn').addEventListener('click', async () => {
+    document.getElementById('orderCount').textContent = 'Laden...';
+    await loadOrders();
+});
 
 // =====================
 // DASHBOARD
@@ -451,12 +578,11 @@ async function initAdmin() {
 function renderDashboard() {
     const products = getProducts();
     document.getElementById('statProducts').textContent = products.length;
-    document.getElementById('statWithImages').textContent = products.filter(p => p.images && p.images.length > 0).length;
-    document.getElementById('statPromo').textContent = (document.getElementById('promoText') && document.getElementById('promoText').value) ? '1' : '0';
-    if (products.length > 0) {
-        const prices = products.map(p => p.price);
-        document.getElementById('statPriceRange').textContent = '\u20AC'+Math.min(...prices)+' - \u20AC'+Math.max(...prices);
-    }
+    const newOrders = _orders.filter(o => o.status === 'nieuw').length;
+    document.getElementById('statNewOrders').textContent = newOrders;
+    document.getElementById('statTotalOrders').textContent = _orders.length;
+    const lowStock = products.filter(p => typeof p.stock === 'number' && p.stock < 3).length;
+    document.getElementById('statLowStock').textContent = lowStock;
 }
 
 // =====================
@@ -474,6 +600,9 @@ function renderProductTable() {
         const badgeHTML = p.badge ? '<span class="table-badge '+p.badge+'">'+({sale:'Sale',new:'Nieuw',popular:'Populair'}[p.badge] || '')+'</span>' : '-';
         const priceHTML = p.oldPrice ? '<span style="text-decoration:line-through;color:var(--grey-light);margin-right:.25rem">\u20AC'+p.oldPrice+'</span>\u20AC'+p.price : '\u20AC'+p.price;
         const descShort = p.description.length > 50 ? p.description.slice(0,50)+'...' : p.description;
+        const stockHTML = typeof p.stock === 'number'
+            ? (p.stock < 3 ? '<span class="stock-low">'+p.stock+'</span>' : '<span class="stock-ok">'+p.stock+'</span>')
+            : '<span style="color:var(--grey-light)">-</span>';
 
         return `<tr>
             <td><div class="table-img">${imgHTML}</div></td>
@@ -481,6 +610,7 @@ function renderProductTable() {
             <td>${p.category}</td>
             <td style="max-width:200px;font-size:.8rem;color:var(--grey-light)">${descShort}</td>
             <td>${priceHTML}</td>
+            <td>${stockHTML}</td>
             <td>${badgeHTML}</td>
             <td><div class="table-actions">
                 <button onclick="editProduct('${p.id}')">&#9998;</button>
@@ -499,6 +629,7 @@ document.getElementById('addProductBtn').addEventListener('click', () => {
     document.getElementById('formTitle').textContent = 'Nieuw product';
     document.getElementById('editId').value = '';
     document.getElementById('productForm').reset();
+    document.getElementById('pStock').value = '';
     currentImages = [];
     renderImagePreviews();
     openFormModal();
@@ -517,6 +648,7 @@ function editProduct(id) {
     document.getElementById('pPrice').value = p.price;
     document.getElementById('pOldPrice').value = p.oldPrice || '';
     document.getElementById('pBadge').value = p.badge || '';
+    document.getElementById('pStock').value = typeof p.stock === 'number' ? p.stock : '';
     document.getElementById('pSpecs').value = (p.specs || []).join(', ');
     currentImages = [...(p.images || [])];
     renderImagePreviews();
@@ -560,6 +692,7 @@ document.getElementById('productForm').addEventListener('submit', async e => {
         price: parseInt(document.getElementById('pPrice').value),
         oldPrice: document.getElementById('pOldPrice').value ? parseInt(document.getElementById('pOldPrice').value) : undefined,
         badge: document.getElementById('pBadge').value,
+        stock: document.getElementById('pStock').value !== '' ? parseInt(document.getElementById('pStock').value) : undefined,
         specs: document.getElementById('pSpecs').value.split(',').map(s => s.trim()).filter(Boolean),
         images: currentImages,
     };
