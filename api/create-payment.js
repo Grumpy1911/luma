@@ -1,8 +1,22 @@
 const { createMollieClient } = require('@mollie/api-client');
 
 module.exports = async (req, res) => {
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    // De webshop roept dit endpoint aan met een relatief pad
+    // (fetch('/api/create-payment') in index.html), dus vanaf hetzelfde
+    // domein. Daar is geen CORS voor nodig.
+    //
+    // Hier stond eerder Access-Control-Allow-Origin: '*', waardoor élke
+    // website betalingen kon laten aanmaken op jouw Mollie-account. Nu mag
+    // alleen een adres uit de lijst hieronder dat, en past de lijst niet,
+    // dan sturen we simpelweg geen CORS-kop mee.
+    const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ||
+        'https://luma-lights.be,https://www.luma-lights.be').split(',').map(o => o.trim());
+
+    const origin = req.headers.origin;
+    if (origin && ALLOWED_ORIGINS.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+    }
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
