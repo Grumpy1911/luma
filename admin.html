@@ -161,8 +161,9 @@
     <div class="login-box">
         <div class="logo">Luma</div>
         <div class="subtitle">Beheerpaneel</div>
-        <div class="login-error" id="loginError">Ongeldig wachtwoord</div>
-        <input type="password" id="loginPass" placeholder="Wachtwoord" autofocus>
+        <div class="login-error" id="loginError">Ongeldige combinatie</div>
+        <input type="email" id="loginEmail" placeholder="E-mailadres" autocomplete="username" autofocus>
+        <input type="password" id="loginPass" placeholder="Wachtwoord" autocomplete="current-password">
         <button class="btn btn-olive btn-block" id="loginBtn">Inloggen</button>
     </div>
 </div>
@@ -181,6 +182,7 @@
         </ul>
         <div class="sidebar-bottom">
             <a href="./" target="_blank">Bekijk webshop &rarr;</a>
+            <a href="#" id="logoutBtn">Afmelden</a>
         </div>
     </aside>
 
@@ -337,40 +339,95 @@
 'use strict';
 
 // =====================
+// SUPABASE CONFIG
+// =====================
+// Deze anon key hoort publiek te zijn — hij is bedoeld voor de browser en zit
+// in elke Supabase-webapp. Hij is géén wachtwoord: wat een bezoeker ermee kan,
+// bepaal je met Row Level Security op de tabellen. Staat RLS uit, dan is dit
+// wél een lek; staat RLS aan, dan is dit precies zoals het hoort.
+//
+// Deze client staat bewust bovenaan: de login hieronder heeft hem nodig.
+const SUPABASE_URL = 'https://pgexambwfqchlkhlbywo.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZXhhbWJ3ZnFjaGxraGxieXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjg4MTMsImV4cCI6MjA5MTk0NDgxM30.DjLTRsAUTf4r8XD3CgXt1cJRtzj4y8TnP2Y8lqNVp3U';
+
+let db = null;
+if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
+
+// =====================
 // AUTH
 // =====================
-const DEFAULT_PASS = 'luma2026';
-function getPass() { return localStorage.getItem('luma_admin_pass') || DEFAULT_PASS; }
-let authed = sessionStorage.getItem('luma_admin') === '1';
+// Het slot zit vanaf hier in Supabase Auth, niet meer in deze pagina.
+//
+// De vorige versie vergeleek het wachtwoord hier in de browser, tegen een
+// waarde uit localStorage met 'luma2026' als terugval. Dat hield niemand
+// tegen: de code staat in de pagina die je bezoeker toch al gedownload heeft,
+// en "wachtwoord wijzigen" veranderde alleen iets op je eigen laptop.
+//
+// Nu logt de beheerder in bij Supabase. Die geeft een sessie terug, en de
+// database beslist per tabel wat die sessie mag. Zonder een RLS-policy die
+// aan auth.uid() hangt, blijft dit scherm trouwens een formaliteit — de
+// policy is het echte slot, dit is alleen de sleutel.
 
-function checkAuth() {
-    if (authed) {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('admin').classList.add('active');
-        initAdmin();
+const loginScreen = document.getElementById('loginScreen');
+const loginErrorEl = document.getElementById('loginError');
+
+function showLoginError(text) {
+    loginErrorEl.textContent = text;
+    loginErrorEl.style.display = 'block';
+}
+
+function openAdmin() {
+    loginScreen.style.display = 'none';
+    document.getElementById('admin').classList.add('active');
+    initAdmin();
+}
+
+async function checkAuth() {
+    if (!db) {
+        showLoginError('Geen verbinding met Supabase.');
+        return;
     }
+    const { data: { session } } = await db.auth.getSession();
+    if (session) openAdmin();
 }
 
 document.getElementById('loginBtn').addEventListener('click', doLogin);
 document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-function doLogin() {
-    const pass = document.getElementById('loginPass').value;
-    if (pass === getPass()) {
-        authed = true;
-        sessionStorage.setItem('luma_admin', '1');
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('admin').classList.add('active');
-        initAdmin();
-    } else {
-        document.getElementById('loginError').style.display = 'block';
+async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPass').value;
+    const btn = document.getElementById('loginBtn');
+
+    if (!email || !password) { showLoginError('Vul je e-mailadres en wachtwoord in.'); return; }
+    if (!db) { showLoginError('Geen verbinding met Supabase.'); return; }
+
+    btn.disabled = true;
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    btn.disabled = false;
+
+    if (error) {
+        showLoginError('Die combinatie klopt niet.');
+        return;
     }
+    loginErrorEl.style.display = 'none';
+    document.getElementById('loginPass').value = '';
+    openAdmin();
 }
+
+document.getElementById('logoutBtn').addEventListener('click', async e => {
+    e.preventDefault();
+    if (db) await db.auth.signOut();
+    location.reload();
+});
 
 // =====================
 // WACHTWOORD WIJZIGEN
 // =====================
-document.getElementById('savePassBtn').addEventListener('click', function() {
+document.getElementById('savePassBtn').addEventListener('click', async function() {
     const old = document.getElementById('passOld').value;
     const nw = document.getElementById('passNew').value.trim();
     const confirm = document.getElementById('passConfirm').value.trim();
@@ -383,11 +440,22 @@ document.getElementById('savePassBtn').addEventListener('click', function() {
         msgEl.style.color = ok ? 'var(--olive-dark)' : 'var(--bordeaux)';
     }
 
-    if (old !== getPass()) { showMsg('Huidig wachtwoord is onjuist.', false); return; }
-    if (nw.length < 6) { showMsg('Nieuw wachtwoord moet minstens 6 tekens bevatten.', false); return; }
+    if (nw.length < 8) { showMsg('Nieuw wachtwoord moet minstens 8 tekens bevatten.', false); return; }
     if (nw !== confirm) { showMsg('Wachtwoorden komen niet overeen.', false); return; }
+    if (!db) { showMsg('Geen verbinding met Supabase.', false); return; }
 
-    localStorage.setItem('luma_admin_pass', nw);
+    // Het huidige wachtwoord opnieuw controleren bij Supabase. Vroeger gebeurde
+    // dat tegen localStorage, wat betekende dat wie het scherm openhad, het
+    // wachtwoord kon vervangen zonder het oude te kennen.
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) { showMsg('Je sessie is verlopen. Meld je opnieuw aan.', false); return; }
+
+    const { error: checkErr } = await db.auth.signInWithPassword({ email: user.email, password: old });
+    if (checkErr) { showMsg('Huidig wachtwoord is onjuist.', false); return; }
+
+    const { error } = await db.auth.updateUser({ password: nw });
+    if (error) { showMsg('Wijzigen mislukt: ' + error.message, false); return; }
+
     document.getElementById('passOld').value = '';
     document.getElementById('passNew').value = '';
     document.getElementById('passConfirm').value = '';
@@ -405,17 +473,6 @@ const defaultProducts = [
     {id:'facet',name:'Facet Bureaulamp',category:'Bureaulamp',price:99,description:'Geometrische facetten vangen het licht en creëren een diamant-effect. Compact en stijlvol.',specs:['E27 fitting','PLA materiaal','H 28cm','Compact design'],images:[],badge:'new'},
     {id:'coral',name:'Coral Wandlamp',category:'Wandlamp',price:119,description:'Geïnspireerd door koraalriffen. Organische vormen die leven brengen aan elke muur.',specs:['E27 fitting','PLA materiaal','Ø 20cm','Inclusief bevestiging'],images:[],badge:''},
 ];
-
-// =====================
-// SUPABASE CONFIG
-// =====================
-const SUPABASE_URL = 'https://pgexambwfqchlkhlbywo.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnZXhhbWJ3ZnFjaGxraGxieXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjg4MTMsImV4cCI6MjA5MTk0NDgxM30.DjLTRsAUTf4r8XD3CgXt1cJRtzj4y8TnP2Y8lqNVp3U';
-
-let db = null;
-if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-}
 
 let _products = null;
 
